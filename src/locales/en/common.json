@@ -126,8 +126,21 @@
       "title": "Utility",
       "anonymous_telemetry": "Anonymous telemetry",
       "tool_auto_approvals": "Tool auto-approvals",
+      "image_generation": "Image generation",
       "clear_temp_files": "Clear temporary files",
       "temp_files_cleared": "Temporary files cleared"
+    },
+    "image_generation": {
+      "page_title": "Image generation",
+      "description": "Generate images right in your chats with an Opper API key. Your normal model keeps answering, and hands image requests to the image model when you ask for a picture.",
+      "api_key": "Opper API key",
+      "get_key": "Get an API key at platform.opper.ai",
+      "model": "Image model (optional)",
+      "model_hint": "Leave empty to use Opper's default image model.",
+      "save": "Save",
+      "saved": "Image generation is on",
+      "remove": "Remove API key",
+      "removed": "Opper API key removed"
     },
     "tool_auto_approvals": {
       "description": "These tools run without asking for your approval. Swipe one away or tap the trash button to be asked again next time.",
@@ -261,6 +274,11 @@
       "worked_for": "Worked for {{duration}}",
       "thought_for": "Thought for {{duration}}",
       "thoughts": "Thoughts"
+    },
+    "generated_image": {
+      "missing": "Image no longer on this device",
+      "open_label": "Open generated image: {{prompt}}",
+      "share": "Share"
     },
     "file_download": {
       "saved_to": "Saved {{filename}} to {{location}}",
@@ -638,6 +656,13 @@
       "name": "Word Document",
       "description": "Write a styled .docx from markdown with themes and an optional title page.",
       "status_creating": "Creating Word document \"{{name}}\""
+    },
+    "generate_image": {
+      "name": "Image Generation",
+      "description": "Create images from a description with Opper.",
+      "needs_api_key": "Add your Opper API key in Settings > Image generation first",
+      "status_generating": "Generating image",
+      "status_generated": "Image generated"
     },
     "create_pdf_file": {
       "name": "PDF Document",

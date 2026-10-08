@@ -126,8 +126,21 @@
       "title": "Hulpprogramma",
       "anonymous_telemetry": "Anonieme telemetrie",
       "tool_auto_approvals": "Automatische toolgoedkeuringen",
+      "image_generation": "Afbeeldingen genereren",
       "clear_temp_files": "Tijdelijke bestanden wissen",
       "temp_files_cleared": "Tijdelijke bestanden gewist"
+    },
+    "image_generation": {
+      "page_title": "Afbeeldingen genereren",
+      "description": "Genereer afbeeldingen rechtstreeks in je chats met een Opper API-sleutel. Je gewone model blijft antwoorden en geeft beeldverzoeken door aan het beeldmodel wanneer je om een afbeelding vraagt.",
+      "api_key": "Opper API-sleutel",
+      "get_key": "Vraag een API-sleutel aan op platform.opper.ai",
+      "model": "Beeldmodel (optioneel)",
+      "model_hint": "Laat leeg om het standaard beeldmodel van Opper te gebruiken.",
+      "save": "Opslaan",
+      "saved": "Afbeeldingen genereren staat aan",
+      "remove": "API-sleutel verwijderen",
+      "removed": "Opper API-sleutel verwijderd"
     },
     "tool_auto_approvals": {
       "description": "Deze tools worden uitgevoerd zonder om je goedkeuring te vragen. Veeg er een weg of tik op de prullenbak om het de volgende keer weer gevraagd te krijgen.",
@@ -261,6 +274,11 @@
       "worked_for": "Gewerkt voor {{duration}}",
       "thought_for": "Nagedacht gedurende {{duration}}",
       "thoughts": "Gedachten"
+    },
+    "generated_image": {
+      "missing": "Afbeelding staat niet meer op dit toestel",
+      "open_label": "Gegenereerde afbeelding openen: {{prompt}}",
+      "share": "Delen"
     },
     "file_download": {
       "saved_to": "{{filename}} opgeslagen naar {{location}}",
@@ -638,6 +656,13 @@
       "name": "Word-document",
       "description": "Schrijf een gestileerd .docx uit markdown met thema's en optioneel titelblad.",
       "status_creating": "Word-document \"{{name}}\" maken"
+    },
+    "generate_image": {
+      "name": "Afbeeldingen genereren",
+      "description": "Maak afbeeldingen op basis van een beschrijving met Opper.",
+      "needs_api_key": "Voeg eerst je Opper API-sleutel toe via Instellingen > Afbeeldingen genereren",
+      "status_generating": "Afbeelding genereren",
+      "status_generated": "Afbeelding gegenereerd"
     },
     "create_pdf_file": {
       "name": "PDF-document",

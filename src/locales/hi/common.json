@@ -126,8 +126,21 @@
       "title": "उपयोगिता",
       "anonymous_telemetry": "अनामित टेलीमेट्री",
       "tool_auto_approvals": "टूल ऑटो-अनुमोदन",
+      "image_generation": null,
       "clear_temp_files": "अस्थायी फ़ाइलें साफ करें",
       "temp_files_cleared": "अस्थायी फ़ाइलें साफ कर दी गईं"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "ये टूल आपकी अनुमति माँगे बिना चलते हैं। अगली बार फिर से पूछे जाने के लिए किसी एक को स्वाइप करके हटाएँ या ट्रैश बटन पर टैप करें।",
@@ -261,6 +274,11 @@
       "worked_for": "{{duration}} के लिए काम किया",
       "thought_for": "{{duration}} के लिए सोचा",
       "thoughts": "विचार"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} को {{location}} में सहेजा गया",
@@ -638,6 +656,13 @@
       "name": "Word दस्तावेज़",
       "description": "थीम और एक वैकल्पिक शीर्षक पृष्ठ के साथ markdown से एक स्टाइल किया हुआ .docx लिखें।",
       "status_creating": "Word दस्तावेज़ \"{{name}}\" बना रहे हैं"
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "PDF दस्तावेज़",

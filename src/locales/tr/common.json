@@ -126,8 +126,21 @@
       "title": "Yardımcı Program",
       "anonymous_telemetry": "Anonim Telemetri",
       "tool_auto_approvals": "Araç otomatik onayları",
+      "image_generation": null,
       "clear_temp_files": "Geçici dosyaları temizle",
       "temp_files_cleared": "Geçici dosyalar temizlendi"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Bu araçlar onayınızı istemeden çalışır. Bir dahaki sefere yeniden sorulması için birini kaydırarak kaldırın veya çöp kutusu düğmesine dokunun.",
@@ -261,6 +274,11 @@
       "worked_for": "{{duration}} çalıştı",
       "thought_for": "{{duration}} düşündü",
       "thoughts": "Düşünceler"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} dosyası {{location}} konumuna kaydedildi",
@@ -638,6 +656,13 @@
       "name": "Word Belgesi",
       "description": "Temalar ve isteğe bağlı bir başlık sayfası ile markdown'dan stillendirilmiş bir .docx yazın.",
       "status_creating": "\"{{name}}\" Word belgesi oluşturuluyor"
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "PDF Belgesi",

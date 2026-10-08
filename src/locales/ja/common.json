@@ -126,8 +126,21 @@
       "title": "ユーティリティ",
       "anonymous_telemetry": "匿名テレメトリ",
       "tool_auto_approvals": "ツールの自動承認",
+      "image_generation": null,
       "clear_temp_files": "一時ファイルをクリア",
       "temp_files_cleared": "一時ファイルがクリアされました"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "これらのツールは承認を求めずに実行されます。スワイプするかゴミ箱ボタンをタップすると、次回から再び確認されます。",
@@ -258,6 +271,11 @@
       "worked_for": "{{duration}}作業しました",
       "thought_for": "{{duration}}考えました",
       "thoughts": "考え"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}}を{{location}}に保存しました",
@@ -617,6 +635,13 @@
       "name": "Wordドキュメント",
       "description": "テーマおよびオプションのタイトルページを含むMarkdownからスタイル付き.docxを作成します。",
       "status_creating": "Wordドキュメント「{{name}}」を作成"
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "PDFドキュメント",

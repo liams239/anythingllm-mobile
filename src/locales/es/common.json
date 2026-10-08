@@ -126,8 +126,21 @@
       "title": "Utilidad",
       "anonymous_telemetry": "Telemetría anónima",
       "tool_auto_approvals": "Aprobaciones automáticas de herramientas",
+      "image_generation": null,
       "clear_temp_files": "Limpiar archivos temporales",
       "temp_files_cleared": "Archivos temporales eliminados"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Estas herramientas se ejecutan sin pedir tu aprobación. Desliza una para quitarla o toca el botón de la papelera para que se te vuelva a preguntar la próxima vez.",
@@ -264,6 +277,11 @@
       "worked_for": "Trabajó durante {{duration}}",
       "thought_for": "Pensó durante {{duration}}",
       "thoughts": "Pensamientos"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Guardado {{filename}} en {{location}}",
@@ -659,6 +677,13 @@
       "name": "Documento de Word",
       "description": "Escriba un .docx estilizado a partir de markdown con temas y una página de título opcional.",
       "status_creating": "Creando documento de Word \"{{name}}\""
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "Documento PDF",

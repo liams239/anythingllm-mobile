@@ -126,8 +126,21 @@
       "title": "Tiện ích",
       "anonymous_telemetry": "Dữ liệu viễn cảm ẩn danh",
       "tool_auto_approvals": "Tự động phê duyệt công cụ",
+      "image_generation": null,
       "clear_temp_files": "Xóa tệp tạm thời",
       "temp_files_cleared": "Đã xóa tệp tạm thời"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Các công cụ này chạy mà không cần hỏi bạn phê duyệt. Vuốt một công cụ đi hoặc nhấn nút thùng rác để được hỏi lại vào lần sau.",
@@ -258,6 +271,11 @@
       "worked_for": "Làm việc trong {{duration}}",
       "thought_for": "Suy nghĩ trong {{duration}}",
       "thoughts": "Suy nghĩ"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Đã lưu {{filename}} vào {{location}}",
@@ -617,6 +635,13 @@
       "name": "Tài liệu Word",
       "description": "Viết một .docx được tạo kiểu từ markdown với các chủ đề và một trang tiêu đề tùy chọn.",
       "status_creating": "Đang tạo tài liệu Word \"{{name}}\""
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "Tài liệu PDF",

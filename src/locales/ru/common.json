@@ -126,8 +126,21 @@
       "title": "Утилиты",
       "anonymous_telemetry": "Анонимная телеметрия",
       "tool_auto_approvals": "Автоодобрение инструментов",
+      "image_generation": null,
       "clear_temp_files": "Очистить временные файлы",
       "temp_files_cleared": "Временные файлы очищены"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Эти инструменты запускаются без запроса вашего одобрения. Смахните один из них или нажмите кнопку корзины, чтобы в следующий раз снова получить запрос.",
@@ -267,6 +280,11 @@
       "worked_for": "Работал {{duration}}",
       "thought_for": "Размышлял {{duration}}",
       "thoughts": "Размышления"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Сохранён {{filename}} в {{location}}",
@@ -680,6 +698,13 @@
       "name": "Документ Word",
       "description": "Написать стилизованный .docx из markdown с темами и опциональной титульной страницей.",
       "status_creating": "Создание документа Word \"{{name}}\""
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "Документ PDF",

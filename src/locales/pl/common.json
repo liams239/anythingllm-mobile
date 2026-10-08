@@ -126,8 +126,21 @@
       "title": "Narzędzia",
       "anonymous_telemetry": "Anonimowa telemetria",
       "tool_auto_approvals": "Automatyczne zatwierdzanie narzędzi",
+      "image_generation": null,
       "clear_temp_files": "Wyczyść pliki tymczasowe",
       "temp_files_cleared": "Pliki tymczasowe wyczyszczone"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Te narzędzia działają bez pytania o Twoją zgodę. Przesuń jedno lub dotknij przycisku kosza, aby następnym razem znów pojawiło się pytanie.",
@@ -267,6 +280,11 @@
       "worked_for": "Pracowałem przez {{duration}}",
       "thought_for": "Myśliłem przez {{duration}}",
       "thoughts": "Myśli"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Zapisano {{filename}} do {{location}}",
@@ -680,6 +698,13 @@
       "name": "Dokument Word",
       "description": "Napisz stylizowany plik .docx z markdown z motywami i opcjonalną stroną tytułową.",
       "status_creating": "Tworzenie dokumentu Word \"{{name}}\""
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "Dokument PDF",

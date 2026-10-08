@@ -126,8 +126,21 @@
       "title": "實用程式",
       "anonymous_telemetry": "匿名遙測",
       "tool_auto_approvals": "工具自動核准",
+      "image_generation": null,
       "clear_temp_files": "清除暫存檔案",
       "temp_files_cleared": "暫存檔案已清除"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "這些工具執行時不會請求你的核准。滑動移除或點選垃圾桶按鈕，下次將再次詢問。",
@@ -258,6 +271,11 @@
       "worked_for": "工作了 {{duration}}",
       "thought_for": "思考了 {{duration}}",
       "thoughts": "思考內容"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "已將 {{filename}} 保存到 {{location}}",
@@ -617,6 +635,13 @@
       "name": "Word 文件",
       "description": "使用主題和選用標題頁面從 Markdown 撰寫樣式化的 .docx。",
       "status_creating": "正在建立 Word 文件「{{name}}」"
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "PDF 文件",

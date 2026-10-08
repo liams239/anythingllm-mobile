@@ -204,6 +204,23 @@ export type IFileDownloadAction = {
 }
 
 /**
+ * An image the assistant generated (see the generate-image tool). Rendered inline under the
+ * reply. Stored in the generated-documents folder like `file_download` files, so it shares
+ * their cleanup.
+ */
+export type IGeneratedImageAction = {
+  type: 'generated_image';
+  action: {
+    /** What the image was generated from */
+    prompt: string;
+    /** Name of the file on disk inside the generated-documents folder eg: "image-<uuid>.png" */
+    storageFilename: string;
+    fileSize: number;
+    mimeType: string;
+  }
+}
+
+/**
  * A scheduled job the assistant created for the user (see the create-scheduled-job tool).
  * Rendered as a card in the chat history that opens the job's run history.
  */
@@ -256,7 +273,7 @@ export type IEmailDraftAction = {
   }
 }
 
-export type IAgentAction = IEmailAction | IEmailDraftAction | ITextAction | ITextDraftAction |ICalendarEventAction | IFileDownloadAction | IScheduledJobCreatedAction | IReminderAction;
+export type IAgentAction = IEmailAction | IEmailDraftAction | ITextAction | ITextDraftAction |ICalendarEventAction | IFileDownloadAction | IGeneratedImageAction | IScheduledJobCreatedAction | IReminderAction;
 export type WorkspaceChatResponseType = {
   textResponse: string;
   thoughts: string[];
@@ -371,7 +388,7 @@ export default class WorkspaceChat extends Model {
   }
 
   /**
-   * Storage filenames of every generated file (`file_download` action) referenced by these chats.
+   * Storage filenames of every generated file (`file_download` / `generated_image` action) referenced by these chats.
    * Handles rows whose `response` is still a JSON string.
    */
   static storageFilenamesFrom(chats: Array<Partial<WorkspaceChatType> | { response?: any }>): string[] {
@@ -383,8 +400,8 @@ export default class WorkspaceChat extends Model {
       }
       const actions: IAgentAction[] = Array.isArray(response?.actions) ? response.actions : [];
       for (const action of actions) {
-        if (action?.type !== 'file_download') continue;
-        const storageFilename = (action as IFileDownloadAction).action?.storageFilename;
+        if (action?.type !== 'file_download' && action?.type !== 'generated_image') continue;
+        const storageFilename = (action as IFileDownloadAction | IGeneratedImageAction).action?.storageFilename;
         if (storageFilename) names.push(storageFilename);
       }
     }

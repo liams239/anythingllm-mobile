@@ -152,6 +152,7 @@ class ToolsManager {
         Tools.default.getCurrentTime,
         Tools.default.summarize,
         Tools.default.createScheduledJob,
+        Tools.default.generateImage,
         Tools.createFiles.createTextFile,
         Tools.createFiles.createPdfFile,
         Tools.createFiles.createDocxFile,

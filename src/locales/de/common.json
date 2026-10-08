@@ -126,8 +126,21 @@
       "title": "Dienstprogramm",
       "anonymous_telemetry": "Anonyme Telemetrie",
       "tool_auto_approvals": "Automatische Tool-Freigaben",
+      "image_generation": null,
       "clear_temp_files": "Temporäre Dateien löschen",
       "temp_files_cleared": "Temporäre Dateien gelöscht"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Diese Tools werden ausgeführt, ohne nach deiner Freigabe zu fragen. Wische eines weg oder tippe auf den Papierkorb, damit beim nächsten Mal wieder gefragt wird.",
@@ -261,6 +274,11 @@
       "worked_for": "{{duration}} gearbeitet",
       "thought_for": "{{duration}} nachgedacht",
       "thoughts": "Gedanken"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "{{filename}} in {{location}} gespeichert",
@@ -638,6 +656,13 @@
       "name": "Word-Dokument",
       "description": "Schreiben Sie einen gestylten .docx aus Markdown mit Themen und einer optionalen Titelseite.",
       "status_creating": "Word-Dokument \"{{name}}\" wird erstellt"
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "PDF-Dokument",

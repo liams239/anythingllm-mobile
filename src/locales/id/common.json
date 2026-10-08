@@ -126,8 +126,21 @@
       "title": "Utilitas",
       "anonymous_telemetry": "Telemetri anonim",
       "tool_auto_approvals": "Persetujuan otomatis alat",
+      "image_generation": null,
       "clear_temp_files": "Bersihkan file sementara",
       "temp_files_cleared": "File sementara dihapus"
+    },
+    "image_generation": {
+      "page_title": null,
+      "description": null,
+      "api_key": null,
+      "get_key": null,
+      "model": null,
+      "model_hint": null,
+      "save": null,
+      "saved": null,
+      "remove": null,
+      "removed": null
     },
     "tool_auto_approvals": {
       "description": "Alat-alat ini berjalan tanpa meminta persetujuan Anda. Geser salah satunya atau ketuk tombol tempat sampah agar ditanya lagi lain kali.",
@@ -258,6 +271,11 @@
       "worked_for": "Bekerja selama {{duration}}",
       "thought_for": "Berpikir selama {{duration}}",
       "thoughts": "Pikiran"
+    },
+    "generated_image": {
+      "missing": null,
+      "open_label": null,
+      "share": null
     },
     "file_download": {
       "saved_to": "Disimpan {{filename}} ke {{location}}",
@@ -617,6 +635,13 @@
       "name": "Dokumen Word",
       "description": "Tulis .docx bergaya dari markdown dengan tema dan halaman judul opsional.",
       "status_creating": "Membuat dokumen Word \"{{name}}\""
+    },
+    "generate_image": {
+      "name": null,
+      "description": null,
+      "needs_api_key": null,
+      "status_generating": null,
+      "status_generated": null
     },
     "create_pdf_file": {
       "name": "Dokumen PDF",
