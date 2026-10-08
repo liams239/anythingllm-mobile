@@ -136,11 +136,15 @@
       "api_key": "Opper API-sleutel",
       "get_key": "Vraag een API-sleutel aan op platform.opper.ai",
       "model": "Beeldmodel (optioneel)",
-      "model_hint": "Laat leeg om het standaard beeldmodel van Opper te gebruiken.",
+      "model_hint": "Kies hieronder een model of typ de ID. Laat leeg om het standaard beeldmodel van Opper te gebruiken.",
       "save": "Opslaan",
       "saved": "Afbeeldingen genereren staat aan",
       "remove": "API-sleutel verwijderen",
-      "removed": "Opper API-sleutel verwijderd"
+      "removed": "Opper API-sleutel verwijderd",
+      "default_model": "Standaard van Opper",
+      "models_loading": "Beeldmodellen laden...",
+      "models_error": "Kon de beeldmodellen niet laden. Tik om opnieuw te proberen, of typ hierboven een model-ID.",
+      "models_none": "Geen beeldmodellen gevonden. Je kan de getypte ID nog steeds gebruiken."
     },
     "tool_auto_approvals": {
       "description": "Deze tools worden uitgevoerd zonder om je goedkeuring te vragen. Veeg er een weg of tik op de prullenbak om het de volgende keer weer gevraagd te krijgen.",

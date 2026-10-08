@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Ces outils s’exécutent sans demander votre approbation. Balayez-en un ou appuyez sur la corbeille pour que la question vous soit de nouveau posée la prochaine fois.",

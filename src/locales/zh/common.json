@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "这些工具运行时不会请求你的批准。滑动移除或点击垃圾桶按钮，下次将再次询问。",

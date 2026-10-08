@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Bu araçlar onayınızı istemeden çalışır. Bir dahaki sefere yeniden sorulması için birini kaydırarak kaldırın veya çöp kutusu düğmesine dokunun.",

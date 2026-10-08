@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Linking, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Linking, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft } from 'phosphor-react-native';
+import { ArrowLeft, Check } from 'phosphor-react-native';
 import { useTranslation } from 'react-i18next';
 import SafeView from '@/components/SafeView';
 import useHighjackBackButtonPress from '@/hooks/useHighjackBackButtonPress';
 import { showToast } from '@/utils/Notification';
-import { clearOpperSettings, getOpperSettings, OPPER_MODEL_PLACEHOLDER, saveOpperSettings } from '@/utils/opper';
+import { clearOpperSettings, getOpperSettings, listOpperImageModels, OPPER_MODEL_PLACEHOLDER, saveOpperSettings, type OpperImageModel } from '@/utils/opper';
 import uiStore from '@/store/UIStore';
 import ToolsManager from '@/utils/ToolsManager';
 import { IWorkspacePageKey } from '../index';
@@ -28,7 +28,8 @@ const OPPER_KEYS_URL = 'https://platform.opper.ai';
 
 /**
  * Settings > Image generation: the Opper API key (and optional model) the generate-image tool
- * uses. Saving a key also switches the tool on, so the user can ask for images right away in
+ * uses. The image models Opper offers are fetched and listed to pick from; typing a model id
+ * by hand still works when the list cannot be loaded. Saving a key also switches the tool on, so the user can ask for images right away in
  * any chat, next to their normal LLM.
  */
 export default function ImageGeneration({ goToPage }: ImageGenerationProps) {
@@ -38,6 +39,8 @@ export default function ImageGeneration({ goToPage }: ImageGenerationProps) {
   const [model, setModel] = useState('');
   const [hasSaved, setHasSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [models, setModels] = useState<OpperImageModel[]>([]);
+  const [modelsStatus, setModelsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const goBack = () => {
     goToPage('main');
     return true;
@@ -52,6 +55,28 @@ export default function ImageGeneration({ goToPage }: ImageGenerationProps) {
       setHasSaved(true);
     });
   }, []);
+
+  async function loadModels(key?: string) {
+    setModelsStatus('loading');
+    try {
+      setModels(await listOpperImageModels(key));
+      setModelsStatus('ready');
+    } catch (e) {
+      console.error('[ImageGeneration] could not load image models', e);
+      setModelsStatus('error');
+    }
+  }
+
+  useEffect(() => {
+    getOpperSettings().then((settings) => loadModels(settings?.apiKey)).catch(() => loadModels());
+  }, []);
+
+  // Narrow the list while typing, but show everything once the field holds a picked model
+  const visibleModels = useMemo(() => {
+    const query = model.trim().toLowerCase();
+    if (!query || models.some((m) => m.id.toLowerCase() === query)) return models;
+    return models.filter((m) => m.id.toLowerCase().includes(query) || m.name.toLowerCase().includes(query));
+  }, [models, model]);
 
   async function setToolEnabled(enabled: boolean) {
     const tools: Record<string, boolean> = await uiStore.getFromStorage('tools', {});
@@ -135,6 +160,13 @@ export default function ImageGeneration({ goToPage }: ImageGenerationProps) {
             style={INPUT_STYLE}
           />
           <Text style={{ color: '#9F9FA0' }} className="text-sm">{t('settings.image_generation.model_hint')}</Text>
+          <ModelList
+            models={visibleModels}
+            status={modelsStatus}
+            selected={model.trim()}
+            onSelect={setModel}
+            onRetry={() => loadModels(apiKey)}
+          />
         </View>
 
         <TouchableOpacity
@@ -151,5 +183,58 @@ export default function ImageGeneration({ goToPage }: ImageGenerationProps) {
         )}
       </ScrollView>
     </SafeView>
+  );
+}
+
+function ModelList({ models, status, selected, onSelect, onRetry }: {
+  models: OpperImageModel[];
+  status: 'loading' | 'ready' | 'error';
+  selected: string;
+  onSelect: (id: string) => void;
+  onRetry: () => void;
+}) {
+  const { t } = useTranslation();
+  if (status === 'loading') {
+    return (
+      <View className="flex flex-row items-center" style={{ gap: 8, paddingVertical: 6 }}>
+        <ActivityIndicator size="small" color="#9F9FA0" />
+        <Text style={{ color: '#9F9FA0' }} className="text-sm">{t('settings.image_generation.models_loading')}</Text>
+      </View>
+    );
+  }
+  if (status === 'error') {
+    return (
+      <TouchableOpacity onPress={onRetry} style={{ paddingVertical: 6 }}>
+        <Text style={{ color: '#F87171' }} className="text-sm">{t('settings.image_generation.models_error')}</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  const rows = [{ id: '', name: t('settings.image_generation.default_model'), provider: 'opper' }, ...models];
+  return (
+    <View style={{ backgroundColor: '#1B1B1E', borderRadius: 8, maxHeight: 320, overflow: 'hidden' }}>
+      <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled">
+        {rows.map((m, index) => {
+          const isSelected = m.id === selected;
+          return (
+            <TouchableOpacity
+              key={m.id || 'default'}
+              onPress={() => onSelect(m.id)}
+              accessibilityState={{ selected: isSelected }}
+              style={{ paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: index === 0 ? 0 : 1, borderTopColor: '#2A2A2E', gap: 10 }}
+              className="flex flex-row items-center">
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text numberOfLines={1} className="text-white text-base">{m.name}</Text>
+                {!!m.id && m.name !== m.id && <Text numberOfLines={1} style={{ color: '#9F9FA0' }} className="text-xs">{m.id}</Text>}
+              </View>
+              {isSelected && <Check size={16} color="#FFF" weight="bold" />}
+            </TouchableOpacity>
+          );
+        })}
+        {models.length === 0 && (
+          <Text style={{ color: '#9F9FA0', paddingHorizontal: 14, paddingVertical: 10 }} className="text-sm">{t('settings.image_generation.models_none')}</Text>
+        )}
+      </ScrollView>
+    </View>
   );
 }

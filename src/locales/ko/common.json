@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "이 도구들은 승인을 요청하지 않고 실행됩니다. 다음에 다시 확인받으려면 항목을 스와이프하거나 휴지통 버튼을 탭하세요.",

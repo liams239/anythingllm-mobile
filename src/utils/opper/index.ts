@@ -136,3 +136,52 @@ export function imageExtension(mimeType: string): string {
     if (sub === 'webp' || sub === 'gif' || sub === 'png') return sub;
     return 'png';
 }
+
+export type OpperImageModel = {
+    id: string;
+    name: string;
+    provider: string;
+};
+
+/** Accepts the shapes the model listings come back in: a bare array, `{ models }` or `{ data }` */
+function parseModelList(body: any): OpperImageModel[] {
+    const list = Array.isArray(body) ? body : body?.models ?? body?.data ?? [];
+    if (!Array.isArray(list)) return [];
+    const models: OpperImageModel[] = [];
+    for (const entry of list) {
+        const id = typeof entry === 'string' ? entry : entry?.id ?? entry?.name;
+        if (!id || typeof id !== 'string') continue;
+        models.push({
+            id,
+            name: typeof entry?.name === 'string' ? entry.name : id,
+            provider: typeof entry?.provider === 'string' ? entry.provider : id.split('/')[0] ?? '',
+        });
+    }
+    return models;
+}
+
+/**
+ * Image models Opper offers. Tries the dedicated image listing first and falls back to the
+ * general model listing filtered on type. Both work without a key; it is sent when we have one.
+ */
+export async function listOpperImageModels(apiKey?: string): Promise<OpperImageModel[]> {
+    const headers: Record<string, string> = apiKey?.trim() ? { Authorization: `Bearer ${apiKey.trim()}` } : {};
+    const urls = [`${OPPER_BASE_URL}/v3/images/models`, `${OPPER_BASE_URL}/v3/models?type=image&limit=500`];
+    let lastError: unknown = null;
+    for (const url of urls) {
+        try {
+            const response = await fetch(url, { headers });
+            if (!response.ok) throw new Error(errorMessage(response.status, await response.text()));
+            const models = parseModelList(await response.json());
+            if (models.length) {
+                const unique = [...new Map(models.map((model) => [model.id, model])).values()];
+                return unique.sort((a, b) => a.id.localeCompare(b.id));
+            }
+        } catch (e) {
+            lastError = e;
+            log(`Could not list image models from ${url}`, e);
+        }
+    }
+    if (lastError) throw lastError;
+    return [];
+}

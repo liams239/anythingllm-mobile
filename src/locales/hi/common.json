@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "ये टूल आपकी अनुमति माँगे बिना चलते हैं। अगली बार फिर से पूछे जाने के लिए किसी एक को स्वाइप करके हटाएँ या ट्रैश बटन पर टैप करें।",

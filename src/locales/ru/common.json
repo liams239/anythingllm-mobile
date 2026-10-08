@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Эти инструменты запускаются без запроса вашего одобрения. Смахните один из них или нажмите кнопку корзины, чтобы в следующий раз снова получить запрос.",

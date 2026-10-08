@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Các công cụ này chạy mà không cần hỏi bạn phê duyệt. Vuốt một công cụ đi hoặc nhấn nút thùng rác để được hỏi lại vào lần sau.",

@@ -136,11 +136,15 @@
       "api_key": "Opper API key",
       "get_key": "Get an API key at platform.opper.ai",
       "model": "Image model (optional)",
-      "model_hint": "Leave empty to use Opper's default image model.",
+      "model_hint": "Pick a model below or type its id. Leave empty to use Opper's default image model.",
       "save": "Save",
       "saved": "Image generation is on",
       "remove": "Remove API key",
-      "removed": "Opper API key removed"
+      "removed": "Opper API key removed",
+      "default_model": "Opper default",
+      "models_loading": "Loading image models...",
+      "models_error": "Could not load the image models. Tap to try again, or type a model id above.",
+      "models_none": "No image models match. You can still use the id you typed."
     },
     "tool_auto_approvals": {
       "description": "These tools run without asking for your approval. Swipe one away or tap the trash button to be asked again next time.",

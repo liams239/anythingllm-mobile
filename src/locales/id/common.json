@@ -140,7 +140,11 @@
       "save": null,
       "saved": null,
       "remove": null,
-      "removed": null
+      "removed": null,
+      "default_model": null,
+      "models_loading": null,
+      "models_error": null,
+      "models_none": null
     },
     "tool_auto_approvals": {
       "description": "Alat-alat ini berjalan tanpa meminta persetujuan Anda. Geser salah satunya atau ketuk tombol tempat sampah agar ditanya lagi lain kali.",
