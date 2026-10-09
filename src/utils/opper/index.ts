@@ -160,28 +160,45 @@ function parseModelList(body: any): OpperImageModel[] {
     return models;
 }
 
+const MODELS_PAGE_SIZE = 500;
+const MAX_MODEL_PAGES = 10;
+
+/** Every page of one listing. The listings return 50 models unless asked for more, so page through. */
+async function fetchAllModelPages(baseUrl: string, headers: Record<string, string>): Promise<OpperImageModel[]> {
+    const seen = new Map<string, OpperImageModel>();
+    for (let page = 0; page < MAX_MODEL_PAGES; page++) {
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        const url = `${baseUrl}${separator}limit=${MODELS_PAGE_SIZE}&offset=${page * MODELS_PAGE_SIZE}`;
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error(errorMessage(response.status, await response.text()));
+        const models = parseModelList(await response.json());
+        const before = seen.size;
+        for (const model of models) seen.set(model.id, model);
+        // Stop on a short page, or when the endpoint ignores the offset and repeats itself
+        if (models.length < MODELS_PAGE_SIZE || seen.size === before) break;
+    }
+    return [...seen.values()];
+}
+
 /**
- * Image models Opper offers. Tries the dedicated image listing first and falls back to the
- * general model listing filtered on type. Both work without a key; it is sent when we have one.
+ * Image models Opper offers: the dedicated image listing merged with the general listing
+ * filtered on type, so a model missing from one still shows up. Both work without a key; it is
+ * sent when we have one. Throws only when neither listing could be read.
  */
 export async function listOpperImageModels(apiKey?: string): Promise<OpperImageModel[]> {
     const headers: Record<string, string> = apiKey?.trim() ? { Authorization: `Bearer ${apiKey.trim()}` } : {};
-    const urls = [`${OPPER_BASE_URL}/v3/images/models`, `${OPPER_BASE_URL}/v3/models?type=image&limit=500`];
+    const urls = [`${OPPER_BASE_URL}/v3/images/models`, `${OPPER_BASE_URL}/v3/models?type=image`];
+    const results = await Promise.allSettled(urls.map((url) => fetchAllModelPages(url, headers)));
+    const merged = new Map<string, OpperImageModel>();
     let lastError: unknown = null;
-    for (const url of urls) {
-        try {
-            const response = await fetch(url, { headers });
-            if (!response.ok) throw new Error(errorMessage(response.status, await response.text()));
-            const models = parseModelList(await response.json());
-            if (models.length) {
-                const unique = [...new Map(models.map((model) => [model.id, model])).values()];
-                return unique.sort((a, b) => a.id.localeCompare(b.id));
-            }
-        } catch (e) {
-            lastError = e;
-            log(`Could not list image models from ${url}`, e);
+    results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+            lastError = result.reason;
+            log(`Could not list image models from ${urls[index]}`, result.reason);
+            return;
         }
-    }
-    if (lastError) throw lastError;
-    return [];
+        for (const model of result.value) if (!merged.has(model.id)) merged.set(model.id, model);
+    });
+    if (!merged.size && lastError) throw lastError;
+    return [...merged.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
