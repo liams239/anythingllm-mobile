@@ -814,7 +814,23 @@
       "memories": "Erinnerungen",
       "memories_description": "Sehen Sie Erinnerungen über Sie oder Ihre Vorlieben",
       "export_thread": "Chat-Thread exportieren",
-      "saved_to_device": "Auf Ihrem Gerät gespeichert"
+      "saved_to_device": "Auf Ihrem Gerät gespeichert",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

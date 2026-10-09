@@ -846,7 +846,25 @@
       "memories": "Memorias",
       "memories_description": "Ver recuerdos sobre usted o sus preferencias",
       "export_thread": "Exportar hilo de chat",
-      "saved_to_device": "Guardado en su dispositivo"
+      "saved_to_device": "Guardado en su dispositivo",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_many": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_many": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

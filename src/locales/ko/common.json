@@ -782,7 +782,21 @@
       "memories": "메모리",
       "memories_description": "당신이나 당신의 선호도에 대한 메모리 확인",
       "export_thread": "채팅 스레드 내보내기",
-      "saved_to_device": "기기에 저장됨"
+      "saved_to_device": "기기에 저장됨",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

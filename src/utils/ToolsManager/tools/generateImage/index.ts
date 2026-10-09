@@ -76,7 +76,14 @@ export default {
             });
             const action: IGeneratedImageAction = {
                 type: 'generated_image',
-                action: { prompt: description, storageFilename: saved.storageFilename, fileSize: saved.fileSize, mimeType: image.mimeType },
+                action: {
+                    prompt: description,
+                    storageFilename: saved.storageFilename,
+                    fileSize: saved.fileSize,
+                    mimeType: image.mimeType,
+                    ...(image.model ? { model: image.model } : {}),
+                    ...(image.cost !== undefined ? { cost: image.cost } : {}),
+                },
             };
             streamEmitter('report_action', action);
             streamEmitter('report_status', i18n.t('tools.generate_image.status_generated'));

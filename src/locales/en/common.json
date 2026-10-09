@@ -814,7 +814,23 @@
       "memories": "Memories",
       "memories_description": "See memories about you or your preferences",
       "export_thread": "Export Chat Thread",
-      "saved_to_device": "Saved to your device"
+      "saved_to_device": "Saved to your device",
+      "usage": {
+        "title": "Usage",
+        "description": "Tokens and cost of this chat and this month",
+        "this_chat": "This chat",
+        "this_month": "This month, all chats",
+        "nothing_yet": "Nothing tracked yet",
+        "replies_one": "{{count}} reply",
+        "replies_other": "{{count}} replies",
+        "tokens": "{{input}} in · {{output}} out tokens",
+        "cached": "{{cached}} from cache",
+        "images_one": "{{count}} image",
+        "images_other": "{{count}} images",
+        "note_estimate": "Costs are estimates from Opper's list prices; images use what Opper billed when it says. Long-prompt surcharges are not included.",
+        "note_unpriced": "Replies from models without a known price count for tokens only.",
+        "note_untracked": "Replies from before this update are not counted."
+      }
     },
     "memories": {
       "global": {

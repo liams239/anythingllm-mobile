@@ -814,7 +814,23 @@
       "memories": "स्मृति",
       "memories_description": "आपके बारे में या आपकी प्राथमिकताओं के बारे में स्मृति देखें",
       "export_thread": "चैट धागा निर्यात करें",
-      "saved_to_device": "आपके डिवाइस में सहेजा गया"
+      "saved_to_device": "आपके डिवाइस में सहेजा गया",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

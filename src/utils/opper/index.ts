@@ -33,6 +33,10 @@ export type OpperImage = {
     /** Base64 image data, no data: prefix */
     base64: string;
     mimeType: string;
+    /** What Opper billed in USD (`meta.cost`), when it says */
+    cost?: number;
+    /** The model that made it (`meta.models_used`), when Opper says */
+    model?: string;
 };
 
 function log(text: string, ...args: any[]) {
@@ -135,7 +139,9 @@ export async function generateOpperImage({ prompt, size, settings, signal }: {
     const match = /^data:([^;]+);base64,(.*)$/s.exec(raw);
     const base64 = match ? match[2] : raw;
     const mimeType = match?.[1] || parsed?.data?.mime_type || 'image/png';
-    return { base64, mimeType };
+    const cost = typeof parsed?.meta?.cost === 'number' && Number.isFinite(parsed.meta.cost) ? parsed.meta.cost : undefined;
+    const usedModel = Array.isArray(parsed?.meta?.models_used) && typeof parsed.meta.models_used[0] === 'string' ? parsed.meta.models_used[0] : undefined;
+    return { base64, mimeType, cost, model: usedModel ?? (settings.model || undefined) };
 }
 
 /** File extension for an image MIME type */

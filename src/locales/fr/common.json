@@ -846,7 +846,25 @@
       "memories": "Souvenirs",
       "memories_description": "Voir les souvenirs vous concernant ou vos préférences",
       "export_thread": "Exporter le fil de conversation",
-      "saved_to_device": "Enregistré sur votre appareil"
+      "saved_to_device": "Enregistré sur votre appareil",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_many": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_many": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

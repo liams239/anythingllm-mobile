@@ -814,7 +814,23 @@
       "memories": "Herinneringen",
       "memories_description": "Zie herinneringen over jezelf of je voorkeuren",
       "export_thread": "Chatdraadje exporteren",
-      "saved_to_device": "Opgeslagen naar je apparaat"
+      "saved_to_device": "Opgeslagen naar je apparaat",
+      "usage": {
+        "title": "Verbruik",
+        "description": "Tokens en kosten van deze chat en deze maand",
+        "this_chat": "Deze chat",
+        "this_month": "Deze maand, alle chats",
+        "nothing_yet": "Nog niets bijgehouden",
+        "replies_one": "{{count}} antwoord",
+        "replies_other": "{{count}} antwoorden",
+        "tokens": "{{input}} in · {{output}} out tokens",
+        "cached": "{{cached}} uit cache",
+        "images_one": "{{count}} afbeelding",
+        "images_other": "{{count}} afbeeldingen",
+        "note_estimate": "Kosten zijn schattingen op basis van Opper's prijslijst; voor afbeeldingen gebruiken we wat Opper aanrekende als het dat meegeeft. Toeslagen voor lange prompts zitten er niet in.",
+        "note_unpriced": "Antwoorden van modellen zonder gekende prijs tellen enkel mee voor tokens.",
+        "note_untracked": "Antwoorden van voor deze update tellen niet mee."
+      }
     },
     "memories": {
       "global": {

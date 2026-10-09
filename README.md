@@ -47,6 +47,11 @@ This is a fork of [Mintplex-Labs/anythingllm-mobile](https://github.com/Mintplex
 - An info sheet per model with its route, where it runs, logging, storage and retention, moderation, data transfer and DPA.
 - Works for the image model list and for the chat models of an OpenAI-compatible connection pointed at Opper. ZDR is only shown when Opper reports that nothing is stored.
 
+**Usage and cost**
+- **Usage** in the thread menu (the three dots, top right) shows the tokens and estimated cost of this chat and of all chats this month, plus generated images with what Opper billed for them. It stays out of the chat itself.
+- Token counts cover every round of a reply, including tool calls. For a connection to Opper the app now asks the server for real usage (including cached tokens) instead of estimating it.
+- Costs come from Opper's list prices; replies from other providers count for tokens only.
+
 **Test builds**
 - A manual GitHub Actions workflow (**Actions > Build test APK > Run workflow**) builds an installable APK of any branch, signed with the debug key. It cannot update a Play Store install.
 

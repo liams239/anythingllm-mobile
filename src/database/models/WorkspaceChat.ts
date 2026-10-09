@@ -213,6 +213,10 @@ export type IGeneratedImageAction = {
   action: {
     /** What the image was generated from */
     prompt: string;
+    /** Opper image model used, when known */
+    model?: string;
+    /** What Opper billed for this image in USD, when it reported it */
+    cost?: number;
     /** Name of the file on disk inside the generated-documents folder eg: "image-<uuid>.png" */
     storageFilename: string;
     fileSize: number;
@@ -273,6 +277,18 @@ export type IEmailDraftAction = {
   }
 }
 
+export type IChatUsage = {
+  /** Provider name eg "generic-openai" */
+  provider?: string;
+  model?: string;
+  /** Answered through Opper, so the reply can be priced from Opper's listing */
+  opper?: boolean;
+  promptTokens: number;
+  completionTokens: number;
+  /** Prompt tokens served from cache, when the provider reports them */
+  cachedPromptTokens?: number;
+}
+
 export type IAgentAction = IEmailAction | IEmailDraftAction | ITextAction | ITextDraftAction |ICalendarEventAction | IFileDownloadAction | IGeneratedImageAction | IScheduledJobCreatedAction | IReminderAction;
 export type WorkspaceChatResponseType = {
   textResponse: string;
@@ -284,6 +300,11 @@ export type WorkspaceChatResponseType = {
   /** @deprecated transient scratch space used by the old handler - kept so old rows still type check */
   currentThoughtChain?: string[];
   actions: IAgentAction[];
+  /**
+   * Which model answered and the tokens the whole turn used (every tool round), for the usage page.
+   * Missing on rows written before usage tracking.
+   */
+  usage?: IChatUsage;
   /**
    * Ordered timeline of thoughts, statuses and tool calls for this turn.
    * Optional because rows written before this field existed only carry
@@ -329,6 +350,12 @@ export default class WorkspaceChat extends Model {
       response,
       createdAt,
     };
+  }
+
+  /** Chats created at or after a moment (epoch millis) - for the usage totals of a period */
+  static async createdSince(since: number): Promise<WorkspaceChatType[]> {
+    const rows = await database.get(this.table).query(Q.where('created_at', Q.gte(since))).fetch();
+    return rows.map((row: any) => this.toWorkspaceChatObject(row) as WorkspaceChatType);
   }
 
   /**

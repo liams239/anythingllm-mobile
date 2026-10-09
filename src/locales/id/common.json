@@ -782,7 +782,21 @@
       "memories": "Memori",
       "memories_description": "Lihat memori tentang Anda atau preferensi Anda",
       "export_thread": "Ekspor Thread Obrolan",
-      "saved_to_device": "Disimpan ke perangkat Anda"
+      "saved_to_device": "Disimpan ke perangkat Anda",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

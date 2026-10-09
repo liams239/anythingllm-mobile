@@ -57,7 +57,7 @@ test('asks for an API key when none is saved', async () => {
 test('generates, saves and reports the image', async () => {
     await saveOpperSettings({ apiKey: ' op-key ', model: 'openai/gpt-image-1' });
     expect(await generateImage.requestPermission()).toBe(true);
-    fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGVsbG8=', mime_type: 'image/jpeg' } }));
+    fetchMock.mockResolvedValue(okResponse({ data: { image: 'aGVsbG8=', mime_type: 'image/jpeg' }, meta: { cost: 0.042, models_used: ['openai/gpt-image-1'] } }));
 
     const emitter = jest.fn();
     const result = await generateImage.execute({ prompt: 'a cat on a bike', size: '1536x1024' }, emitter);
@@ -77,7 +77,7 @@ test('generates, saves and reports the image', async () => {
     const action = emitter.mock.calls.find(([event]) => event === 'report_action')?.[1];
     expect(action).toMatchObject({
         type: 'generated_image',
-        action: { prompt: 'a cat on a bike', mimeType: 'image/jpeg', storageFilename: savedPath.split('/').pop() },
+        action: { prompt: 'a cat on a bike', mimeType: 'image/jpeg', storageFilename: savedPath.split('/').pop(), cost: 0.042, model: 'openai/gpt-image-1' },
     });
     expect(result).toMatch(/already shown to the user/);
 });

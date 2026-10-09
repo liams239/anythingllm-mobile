@@ -782,7 +782,21 @@
       "memories": "思い出",
       "memories_description": "あなたまたはあなたの設定についての思い出を参照してください",
       "export_thread": "チャットスレッドをエクスポート",
-      "saved_to_device": "デバイスに保存"
+      "saved_to_device": "デバイスに保存",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

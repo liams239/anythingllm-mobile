@@ -782,7 +782,21 @@
       "memories": "記憶",
       "memories_description": "查看關於您或您的偏好設定的記憶",
       "export_thread": "匯出聊天執行緒",
-      "saved_to_device": "已保存到您的裝置"
+      "saved_to_device": "已保存到您的裝置",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

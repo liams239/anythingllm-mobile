@@ -878,7 +878,27 @@
       "memories": "Воспоминания",
       "memories_description": "Посмотрите воспоминания о вас или ваших предпочтениях",
       "export_thread": "Экспортировать поток чата",
-      "saved_to_device": "Сохранено на вашем устройстве"
+      "saved_to_device": "Сохранено на вашем устройстве",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_few": null,
+        "replies_many": null,
+        "replies_one": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_few": null,
+        "images_many": null,
+        "images_one": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {

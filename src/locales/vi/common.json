@@ -782,7 +782,21 @@
       "memories": "Ký ức",
       "memories_description": "Xem ký ức về bạn hoặc tùy chọn của bạn",
       "export_thread": "Xuất chủ đề trò chuyện",
-      "saved_to_device": "Đã lưu vào thiết bị của bạn"
+      "saved_to_device": "Đã lưu vào thiết bị của bạn",
+      "usage": {
+        "title": null,
+        "description": null,
+        "this_chat": null,
+        "this_month": null,
+        "nothing_yet": null,
+        "replies_other": null,
+        "tokens": null,
+        "cached": null,
+        "images_other": null,
+        "note_estimate": null,
+        "note_unpriced": null,
+        "note_untracked": null
+      }
     },
     "memories": {
       "global": {
