@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { ArrowLeft, ArrowsClockwise, CaretDown, Check, ImageSquare, MagnifyingGlass, X } from 'phosphor-react-native';
 import { useTranslation } from 'react-i18next';
-import { listOpperImageModels, saveOpperSettings, type OpperImageModel, type OpperSettings } from '@/utils/opper';
+import { formatOpperPrice, listOpperImageModels, saveOpperSettings, type OpperImageModel, type OpperSettings } from '@/utils/opper';
 import { showToast } from '@/utils/Notification';
 
 /**
@@ -155,6 +155,7 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
                   <View className="flex-1" style={{ gap: 2 }}>
                     <Text className="text-white text-base font-medium" numberOfLines={1}>{m.name}</Text>
                     {!!m.id && m.name !== m.id && <Text className="text-[#9F9FA0] text-xs" numberOfLines={1}>{m.id}</Text>}
+                    {!!formatOpperPrice(m.price) && <Text className="text-[#7cd4fd] text-xs" numberOfLines={1}>{formatOpperPrice(m.price)}</Text>}
                   </View>
                   {isSelected && <Check size={20} color="#7cd4fd" weight="bold" style={{ marginLeft: 12 }} />}
                 </TouchableOpacity>

@@ -1,4 +1,7 @@
 import * as Keychain from 'react-native-keychain';
+import { parseOpperPrice, type OpperPrice } from './pricing';
+
+export { formatOpperPrice, type OpperPrice } from './pricing';
 
 /**
  * Opper (https://opper.ai) image generation. Lets the chat model hand image requests to an
@@ -141,6 +144,10 @@ export type OpperImageModel = {
     id: string;
     name: string;
     provider: string;
+    /** From the listing's `pricing`, when it has one */
+    price?: OpperPrice | null;
+    /** Other ids Opper accepts for this model */
+    aliases?: string[];
 };
 
 /** Accepts the shapes the model listings come back in: a bare array, `{ models }` or `{ data }` */
@@ -154,7 +161,13 @@ function parseModelList(body: any): OpperImageModel[] {
         models.push({
             id,
             name: typeof entry?.name === 'string' ? entry.name : id,
-            provider: typeof entry?.provider === 'string' ? entry.provider : id.split('/')[0] ?? '',
+            provider: typeof entry?.provider === 'string'
+                ? entry.provider
+                : entry?.provider?.display_name ?? entry?.provider?.slug ?? id.split('/')[0] ?? '',
+            price: typeof entry === 'object' ? parseOpperPrice(entry) : null,
+            // Other names the model goes by: listed aliases, then the route-less id (eg: "deepseek-v4-pro")
+            aliases: [...(Array.isArray(entry?.aliases) ? entry.aliases : []), entry?.model_id, entry?.model]
+                .filter((a: unknown): a is string => typeof a === 'string' && a !== id),
         });
     }
     return models;
@@ -201,4 +214,24 @@ export async function listOpperImageModels(apiKey?: string): Promise<OpperImageM
     });
     if (!merged.size && lastError) throw lastError;
     return [...merged.values()].sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * Token prices of Opper's chat models, keyed by model id and alias, for showing next to the models
+ * of an OpenAI-compatible connection pointed at Opper (its /models carries no prices).
+ */
+export async function listOpperModelPrices(apiKey?: string): Promise<Map<string, OpperPrice>> {
+    const headers: Record<string, string> = apiKey?.trim() ? { Authorization: `Bearer ${apiKey.trim()}` } : {};
+    const models = await fetchAllModelPages(`${OPPER_BASE_URL}/v3/models?type=llm`, headers);
+    const prices = new Map<string, OpperPrice>();
+    for (const model of models) {
+        if (!model.price) continue;
+        for (const id of [model.id, ...(model.aliases ?? [])]) if (!prices.has(id)) prices.set(id, model.price);
+    }
+    return prices;
+}
+
+/** Whether a base URL points at Opper (eg: an OpenAI-compatible connection to api.opper.ai) */
+export function isOpperUrl(url?: string | null): boolean {
+    return typeof url === 'string' && /(^|\/\/|\.)opper\.ai(\/|:|$)/i.test(url.trim());
 }

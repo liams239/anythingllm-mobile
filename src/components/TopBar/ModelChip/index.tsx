@@ -58,7 +58,7 @@ import useProviderSwitcher from '@/hooks/useProviderSwitcher';
 import ProviderPicker, { ProviderBar } from './ProviderPicker';
 import ProviderConnectForm from './ProviderConnectForm';
 import ImageModelPicker, { ImageModelBar, IMAGE_MODEL_BAR_HEIGHT } from './ImageModelPicker';
-import { getOpperSettings, type OpperSettings } from '@/utils/opper';
+import { formatOpperPrice, getOpperSettings, isOpperUrl, listOpperModelPrices, type OpperPrice, type OpperSettings } from '@/utils/opper';
 import { navigateWhenReady } from '@/utils/navigationRef';
 import { PATHS } from '@/utils/paths';
 
@@ -580,6 +580,17 @@ function ExternalProviderModels({
     fetchModels();
   }, [fetchModels]);
 
+  // Opper's OpenAI-compatible /models has no prices - look them up in Opper's own listing
+  const [opperPrices, setOpperPrices] = useState<Map<string, OpperPrice> | null>(null);
+  useEffect(() => {
+    if (!isOpperUrl(baseUrl)) return setOpperPrices(null);
+    let cancelled = false;
+    listOpperModelPrices(apiKey)
+      .then(prices => { if (!cancelled) setOpperPrices(prices); })
+      .catch(error => console.log('[ModelChip] Could not load Opper prices', error));
+    return () => { cancelled = true; };
+  }, [baseUrl, apiKey]);
+
   const filteredModels = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return models;
@@ -681,6 +692,7 @@ function ExternalProviderModels({
           renderItem={({ item: model }) => {
             const isSelected = model.id === currentModelId;
             const displayName = (model as { name?: string }).name;
+            const price = formatOpperPrice(opperPrices?.get(model.id));
             return (
               <TouchableOpacity
                 disabled={isSaving}
@@ -698,6 +710,7 @@ function ExternalProviderModels({
                   {!!displayName && displayName !== model.id && (
                     <Text className="text-[#9F9FA0] text-xs" numberOfLines={1}>{model.id}</Text>
                   )}
+                  {!!price && <Text className="text-[#7cd4fd] text-xs" numberOfLines={1}>{price}</Text>}
                 </View>
                 {isSelected && <Check size={20} color="#7cd4fd" weight="bold" style={{ marginLeft: 12 }} />}
               </TouchableOpacity>

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import SafeView from '@/components/SafeView';
 import useHighjackBackButtonPress from '@/hooks/useHighjackBackButtonPress';
 import { showToast } from '@/utils/Notification';
-import { clearOpperSettings, getOpperSettings, listOpperImageModels, OPPER_MODEL_PLACEHOLDER, saveOpperSettings, type OpperImageModel } from '@/utils/opper';
+import { clearOpperSettings, formatOpperPrice, getOpperSettings, listOpperImageModels, OPPER_MODEL_PLACEHOLDER, saveOpperSettings, type OpperImageModel } from '@/utils/opper';
 import uiStore from '@/store/UIStore';
 import ToolsManager from '@/utils/ToolsManager';
 import { IWorkspacePageKey } from '../index';
@@ -226,6 +226,7 @@ function ModelList({ models, status, selected, onSelect, onRetry }: {
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text numberOfLines={1} className="text-white text-base">{m.name}</Text>
                 {!!m.id && m.name !== m.id && <Text numberOfLines={1} style={{ color: '#9F9FA0' }} className="text-xs">{m.id}</Text>}
+                {!!formatOpperPrice(m.price) && <Text numberOfLines={1} style={{ color: '#7CC4FF' }} className="text-xs">{formatOpperPrice(m.price)}</Text>}
               </View>
               {isSelected && <Check size={16} color="#FFF" weight="bold" />}
             </TouchableOpacity>

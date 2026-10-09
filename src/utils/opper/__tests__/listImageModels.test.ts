@@ -70,7 +70,7 @@ test('stops when an endpoint ignores the offset and repeats the same page', asyn
 
 test('uses the other listing when one fails, throws only when both fail', async () => {
     serve({ [MODELS_URL]: () => json(['openai/dall-e-3']) });
-    expect(await listOpperImageModels()).toEqual([{ id: 'openai/dall-e-3', name: 'openai/dall-e-3', provider: 'openai' }]);
+    expect(await listOpperImageModels()).toEqual([{ id: 'openai/dall-e-3', name: 'openai/dall-e-3', provider: 'openai', price: null, aliases: [] }]);
 
     fetchMock.mockReset();
     fetchMock.mockResolvedValue(json({ detail: 'down' }, 503));
