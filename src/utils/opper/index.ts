@@ -1,7 +1,13 @@
 import * as Keychain from 'react-native-keychain';
 import { parseOpperPrice, type OpperPrice } from './pricing';
+import { parseOpperMeta, type OpperModelMeta } from './metadata';
 
-export { formatOpperPrice, type OpperPrice } from './pricing';
+export { formatOpperPrice, comparablePrice, type OpperPrice } from './pricing';
+export { traits, contextLabel, resolutionLabel, regionLabel, type OpperModelMeta } from './metadata';
+export {
+    activeFilterCount, matchesFilters, noModelTrains, normalizeFilters, EMPTY_FILTERS, PRICE_STEPS,
+    type OpperModelFilters, type OpperModelKind, type OpperCapabilityFilter,
+} from './filters';
 
 /**
  * Opper (https://opper.ai) image generation. Lets the chat model hand image requests to an
@@ -140,7 +146,7 @@ export function imageExtension(mimeType: string): string {
     return 'png';
 }
 
-export type OpperImageModel = {
+export type OpperModel = {
     id: string;
     name: string;
     provider: string;
@@ -148,7 +154,11 @@ export type OpperImageModel = {
     price?: OpperPrice | null;
     /** Other ids Opper accepts for this model */
     aliases?: string[];
+    /** Capabilities and privacy - null for bare ids without a listing entry */
+    meta?: OpperModelMeta | null;
 };
+/** @deprecated use OpperModel */
+export type OpperImageModel = OpperModel;
 
 /** Accepts the shapes the model listings come back in: a bare array, `{ models }` or `{ data }` */
 function parseModelList(body: any): OpperImageModel[] {
@@ -169,6 +179,7 @@ function parseModelList(body: any): OpperImageModel[] {
             // route-less name (eg: "deepseek-v4-pro") is shared and would match the wrong route
             aliases: (Array.isArray(entry?.aliases) ? entry.aliases : [])
                 .filter((a: unknown): a is string => typeof a === 'string' && a !== id),
+            meta: typeof entry === 'object' ? parseOpperMeta(entry) : null,
         });
     }
     return models;
@@ -199,7 +210,7 @@ async function fetchAllModelPages(baseUrl: string, headers: Record<string, strin
  * filtered on type, so a model missing from one still shows up. Both work without a key; it is
  * sent when we have one. Throws only when neither listing could be read.
  */
-export async function listOpperImageModels(apiKey?: string): Promise<OpperImageModel[]> {
+async function fetchOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
     const headers: Record<string, string> = apiKey?.trim() ? { Authorization: `Bearer ${apiKey.trim()}` } : {};
     const urls = [`${OPPER_BASE_URL}/v3/images/models`, `${OPPER_BASE_URL}/v3/models?type=image`];
     const results = await Promise.allSettled(urls.map((url) => fetchAllModelPages(url, headers)));
@@ -218,18 +229,49 @@ export async function listOpperImageModels(apiKey?: string): Promise<OpperImageM
 }
 
 /**
- * Token prices of Opper's chat models, keyed by model id and alias, for showing next to the models
- * of an OpenAI-compatible connection pointed at Opper (its /models carries no prices).
+ * Opper's chat models keyed by model id and alias, for the badges, filters and prices next to the
+ * models of an OpenAI-compatible connection pointed at Opper (its /models carries none of that).
  */
-export async function listOpperModelPrices(apiKey?: string): Promise<Map<string, OpperPrice>> {
+async function fetchOpperChatModels(apiKey?: string): Promise<Map<string, OpperModel>> {
     const headers: Record<string, string> = apiKey?.trim() ? { Authorization: `Bearer ${apiKey.trim()}` } : {};
     const models = await fetchAllModelPages(`${OPPER_BASE_URL}/v3/models?type=llm`, headers);
-    const prices = new Map<string, OpperPrice>();
+    const byId = new Map<string, OpperModel>();
     for (const model of models) {
-        if (!model.price) continue;
-        for (const id of [model.id, ...(model.aliases ?? [])]) if (!prices.has(id)) prices.set(id, model.price);
+        for (const id of [model.id, ...(model.aliases ?? [])]) if (!byId.has(id)) byId.set(id, model);
     }
-    return prices;
+    return byId;
+}
+
+/** Listings change rarely - reuse a fetch for a while so reopening the sheet is instant */
+const CACHE_MS = 10 * 60 * 1000;
+const listingCache = new Map<string, { at: number; promise: Promise<any> }>();
+
+function cachedListing<T>(key: string, load: () => Promise<T>): Promise<T> {
+    const hit = listingCache.get(key);
+    if (hit && Date.now() - hit.at < CACHE_MS) return hit.promise;
+    const promise = load();
+    listingCache.set(key, { at: Date.now(), promise });
+    // A failed fetch is not kept, so "Try again" really tries again
+    promise.catch(() => { if (listingCache.get(key)?.promise === promise) listingCache.delete(key); });
+    return promise;
+}
+
+/** Forget cached listings, eg: after the API key changed */
+export function clearOpperModelCache() {
+    listingCache.clear();
+}
+
+/**
+ * Image models Opper offers: the dedicated image listing merged with the general listing
+ * filtered on type, so a model missing from one still shows up. Throws only when neither listing
+ * could be read.
+ */
+export function listOpperImageModels(apiKey?: string): Promise<OpperModel[]> {
+    return cachedListing(`image:${apiKey?.trim() ?? ''}`, () => fetchOpperImageModels(apiKey));
+}
+
+export function listOpperChatModels(apiKey?: string): Promise<Map<string, OpperModel>> {
+    return cachedListing(`chat:${apiKey?.trim() ?? ''}`, () => fetchOpperChatModels(apiKey));
 }
 
 /** Whether a base URL points at Opper (eg: an OpenAI-compatible connection to api.opper.ai) */

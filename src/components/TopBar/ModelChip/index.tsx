@@ -58,7 +58,14 @@ import useProviderSwitcher from '@/hooks/useProviderSwitcher';
 import ProviderPicker, { ProviderBar } from './ProviderPicker';
 import ProviderConnectForm from './ProviderConnectForm';
 import ImageModelPicker, { ImageModelBar, IMAGE_MODEL_BAR_HEIGHT } from './ImageModelPicker';
-import { formatOpperPrice, getOpperSettings, isOpperUrl, listOpperModelPrices, type OpperPrice, type OpperSettings } from '@/utils/opper';
+import {
+  getOpperSettings, isOpperUrl, listOpperChatModels, listOpperImageModels, matchesFilters, noModelTrains,
+  type OpperModel, type OpperSettings,
+} from '@/utils/opper';
+import OpperModelRow from '@/components/OpperModels/ModelRow';
+import OpperModelInfo from '@/components/OpperModels/ModelInfo';
+import { FilterPanel, NoTrainingNote, QuickFilters } from '@/components/OpperModels/Filters';
+import useOpperFilters from '@/components/OpperModels/useOpperFilters';
 import { navigateWhenReady } from '@/utils/navigationRef';
 import { PATHS } from '@/utils/paths';
 
@@ -227,6 +234,17 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
     getOpperSettings().then(setImageSettings).catch(() => setImageSettings(null));
   }, []);
 
+  // The picked image model's listing entry, for the icons on its row (cached, so usually instant)
+  const [imageModel, setImageModel] = useState<OpperModel | null>(null);
+  useEffect(() => {
+    if (!imageSettings?.model) return setImageModel(null);
+    let cancelled = false;
+    listOpperImageModels(imageSettings.apiKey)
+      .then(models => { if (!cancelled) setImageModel(models.find(m => m.id === imageSettings.model) ?? null); })
+      .catch(() => null);
+    return () => { cancelled = true; };
+  }, [imageSettings?.apiKey, imageSettings?.model]);
+
   const openImageModels = () => {
     if (imageSettings) return setView({ name: 'imageModels' });
     // No key yet - image generation is set up on its settings page
@@ -294,7 +312,7 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
   const header = (
     <View style={{ gap: IMAGE_MODEL_BAR_GAP, alignSelf: 'stretch' }}>
       <ProviderBar provider={llmPreferences.provider} onPress={() => setView({ name: 'providers' })} />
-      {showImageModel && <ImageModelBar settings={imageSettings} onPress={openImageModels} />}
+      {showImageModel && <ImageModelBar settings={imageSettings} model={imageModel} onPress={openImageModels} />}
     </View>
   );
   const headerHeight = HEADER_HEIGHT + (showImageModel ? IMAGE_MODEL_BAR_GAP + IMAGE_MODEL_BAR_HEIGHT : 0);
@@ -580,25 +598,43 @@ function ExternalProviderModels({
     fetchModels();
   }, [fetchModels]);
 
-  // Opper's OpenAI-compatible /models has no prices - look them up in Opper's own listing
-  const [opperPrices, setOpperPrices] = useState<Map<string, OpperPrice> | null>(null);
+  // Opper's OpenAI-compatible /models has only ids - prices, badges and privacy come from Opper's
+  // own listing, matched per route id
+  const isOpper = isOpperUrl(baseUrl);
+  const [opperModels, setOpperModels] = useState<Map<string, OpperModel> | null>(null);
+  const [opperFilters, setOpperFilters] = useOpperFilters('chat');
+  const [opperView, setOpperView] = useState<{ name: 'list' } | { name: 'filters' } | { name: 'info'; model: OpperModel }>({ name: 'list' });
   useEffect(() => {
-    if (!isOpperUrl(baseUrl)) return setOpperPrices(null);
+    if (!isOpper) return setOpperModels(null);
     let cancelled = false;
-    listOpperModelPrices(apiKey)
-      .then(prices => { if (!cancelled) setOpperPrices(prices); })
-      .catch(error => console.log('[ModelChip] Could not load Opper prices', error));
+    listOpperChatModels(apiKey)
+      .then(byId => { if (!cancelled) setOpperModels(byId); })
+      .catch(error => console.log('[ModelChip] Could not load Opper model details', error));
     return () => { cancelled = true; };
-  }, [baseUrl, apiKey]);
+  }, [isOpper, apiKey]);
+
+  // Filters only apply once Opper's details are in - before that every model shows
+  const opperFiltered = useMemo(() => {
+    if (!opperModels) return models;
+    return models.filter(model => {
+      const entry = opperModels.get(model.id);
+      return matchesFilters(entry?.meta, entry?.price, opperFilters);
+    });
+  }, [models, opperModels, opperFilters]);
+  const noneTrain = useMemo(
+    () => !!opperModels && noModelTrains(models.map(model => opperModels.get(model.id)?.meta)),
+    [models, opperModels],
+  );
 
   const filteredModels = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return models;
-    return models.filter(model =>
+    if (!query) return opperFiltered;
+    return opperFiltered.filter(model =>
       model.id.toLowerCase().includes(query) ||
-      ((model as { name?: string }).name || '').toLowerCase().includes(query),
+      ((model as { name?: string }).name || '').toLowerCase().includes(query) ||
+      (opperModels?.get(model.id)?.name || '').toLowerCase().includes(query),
     );
-  }, [models, searchQuery]);
+  }, [opperFiltered, searchQuery, opperModels]);
 
   const selectModel = async (modelId: string) => {
     if (isSaving) return;
@@ -654,6 +690,13 @@ function ExternalProviderModels({
     );
   }
 
+  if (opperModels && opperView.name === 'filters') {
+    return <FilterPanel kind="chat" filters={opperFilters} onChange={setOpperFilters} matchCount={opperFiltered.length} onDone={() => setOpperView({ name: 'list' })} />;
+  }
+  if (opperView.name === 'info') {
+    return <OpperModelInfo model={opperView.model} kind="chat" onBack={() => setOpperView({ name: 'list' })} />;
+  }
+
   return (
     <View className="flex flex-col items-center justify-center gap-y-4 w-full h-full">
       {header}
@@ -676,9 +719,15 @@ function ExternalProviderModels({
           )}
         </View>
       )}
+      {!!opperModels && (
+        <View className="w-full" style={{ gap: 10 }}>
+          <QuickFilters kind="chat" filters={opperFilters} onChange={setOpperFilters} onOpenPanel={() => setOpperView({ name: 'filters' })} />
+          {noneTrain && <NoTrainingNote />}
+        </View>
+      )}
       {!filteredModels.length && (
         <Text className="text-white text-sm text-center pt-4 px-5">
-          {t('top_bar.model_chip.no_models_found', { query: searchQuery })}
+          {searchQuery ? t('top_bar.model_chip.no_models_found', { query: searchQuery }) : t('opper_models.filters.none_match')}
         </Text>
       )}
       {filteredModels.length > 0 && (
@@ -692,7 +741,21 @@ function ExternalProviderModels({
           renderItem={({ item: model }) => {
             const isSelected = model.id === currentModelId;
             const displayName = (model as { name?: string }).name;
-            const price = formatOpperPrice(opperPrices?.get(model.id));
+            if (opperModels) {
+              const entry = opperModels.get(model.id);
+              return (
+                <OpperModelRow
+                  id={model.id}
+                  name={entry?.name || displayName}
+                  model={entry}
+                  kind="chat"
+                  selected={isSelected}
+                  disabled={isSaving}
+                  onPress={() => selectModel(model.id)}
+                  onInfo={entry ? () => setOpperView({ name: 'info', model: entry }) : undefined}
+                />
+              );
+            }
             return (
               <TouchableOpacity
                 disabled={isSaving}
@@ -710,7 +773,6 @@ function ExternalProviderModels({
                   {!!displayName && displayName !== model.id && (
                     <Text className="text-[#9F9FA0] text-xs" numberOfLines={1}>{model.id}</Text>
                   )}
-                  {!!price && <Text className="text-[#7cd4fd] text-xs" numberOfLines={1}>{price}</Text>}
                 </View>
                 {isSelected && <Check size={20} color="#7cd4fd" weight="bold" style={{ marginLeft: 12 }} />}
               </TouchableOpacity>

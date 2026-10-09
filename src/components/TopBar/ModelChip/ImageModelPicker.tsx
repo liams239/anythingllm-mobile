@@ -1,20 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import { ArrowLeft, ArrowsClockwise, CaretDown, Check, ImageSquare, MagnifyingGlass, X } from 'phosphor-react-native';
+import { ArrowLeft, ArrowsClockwise, CaretDown, ImageSquare, MagnifyingGlass, X } from 'phosphor-react-native';
 import { useTranslation } from 'react-i18next';
-import { formatOpperPrice, listOpperImageModels, saveOpperSettings, type OpperImageModel, type OpperSettings } from '@/utils/opper';
+import { listOpperImageModels, matchesFilters, noModelTrains, saveOpperSettings, type OpperModel, type OpperSettings } from '@/utils/opper';
 import { showToast } from '@/utils/Notification';
+import { ModelBadgeIcons } from '@/components/OpperModels/Badges';
+import OpperModelRow from '@/components/OpperModels/ModelRow';
+import OpperModelInfo from '@/components/OpperModels/ModelInfo';
+import { FilterPanel, NoTrainingNote, QuickFilters } from '@/components/OpperModels/Filters';
+import useOpperFilters from '@/components/OpperModels/useOpperFilters';
+
+export const IMAGE_MODEL_BAR_HEIGHT = 44;
 
 /**
  * Row under the provider bar in the model chip sheet showing the image model the generate-image
- * tool uses. Without an Opper key it offers to set image generation up instead.
+ * tool uses, with its traits as icons. Without an Opper key it offers to set image generation up.
  */
-export function ImageModelBar({ settings, onPress }: { settings: OpperSettings | null; onPress: () => void }) {
+export function ImageModelBar({ settings, model, onPress }: { settings: OpperSettings | null; model?: OpperModel | null; onPress: () => void }) {
   const { t } = useTranslation();
   const label = !settings
     ? t('top_bar.model_chip.image_model_setup')
-    : settings.model || t('settings.image_generation.default_model');
+    : model?.name || settings.model || t('settings.image_generation.default_model');
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -25,16 +32,17 @@ export function ImageModelBar({ settings, onPress }: { settings: OpperSettings |
         <Text className="text-[#9F9FA0] text-xs">{t('top_bar.model_chip.image_model')}</Text>
         <Text className="text-white text-sm" numberOfLines={1} ellipsizeMode="middle">{label}</Text>
       </View>
+      {!!settings && <ModelBadgeIcons meta={model?.meta} kind="image" />}
       <CaretDown size={14} color="#9F9FA0" weight="bold" />
     </TouchableOpacity>
   );
 }
 
-export const IMAGE_MODEL_BAR_HEIGHT = 44;
+type View_ = { name: 'list' } | { name: 'filters' } | { name: 'info'; model: OpperModel };
 
 /**
- * In-sheet list of the image models Opper offers. Picking one saves it right away, so the next
- * image in any chat uses it.
+ * In-sheet list of the image models Opper offers, with badges, filters and per-model info.
+ * Picking one saves it right away, so the next image in any chat uses it.
  */
 export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFocus }: {
   settings: OpperSettings;
@@ -43,10 +51,12 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
   onSearchFocus?: () => void;
 }) {
   const { t } = useTranslation();
-  const [models, setModels] = useState<OpperImageModel[]>([]);
+  const [models, setModels] = useState<OpperModel[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [searchQuery, setSearchQuery] = useState('');
   const [saving, setSaving] = useState(false);
+  const [view, setView] = useState<View_>({ name: 'list' });
+  const [filters, setFilters] = useOpperFilters('image');
 
   async function load() {
     setStatus('loading');
@@ -61,14 +71,16 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
 
   useEffect(() => { load(); }, []);
 
+  const filtered = useMemo(() => models.filter((m) => matchesFilters(m.meta, m.price, filters)), [models, filters]);
   const rows = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     const matches = query
-      ? models.filter((m) => m.id.toLowerCase().includes(query) || m.name.toLowerCase().includes(query))
-      : models;
+      ? filtered.filter((m) => m.id.toLowerCase().includes(query) || m.name.toLowerCase().includes(query))
+      : filtered;
     // "Opper default" stays on top unless the user is searching
-    return query ? matches : [{ id: '', name: t('settings.image_generation.default_model'), provider: 'opper' }, ...matches];
-  }, [models, searchQuery, t]);
+    return query ? matches : [{ id: '', name: t('settings.image_generation.default_model'), provider: 'opper' } as OpperModel, ...matches];
+  }, [filtered, searchQuery, t]);
+  const noneTrain = noModelTrains(models.map((m) => m.meta));
 
   async function select(modelId: string) {
     if (saving) return;
@@ -84,6 +96,13 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
     } finally {
       setSaving(false);
     }
+  }
+
+  if (view.name === 'filters') {
+    return <FilterPanel kind="image" filters={filters} onChange={setFilters} matchCount={filtered.length} onDone={() => setView({ name: 'list' })} />;
+  }
+  if (view.name === 'info') {
+    return <OpperModelInfo model={view.model} kind="image" onBack={() => setView({ name: 'list' })} />;
   }
 
   return (
@@ -132,38 +151,32 @@ export default function ImageModelPicker({ settings, onSaved, onBack, onSearchFo
               </TouchableOpacity>
             )}
           </View>
+          <QuickFilters kind="image" filters={filters} onChange={setFilters} onOpenPanel={() => setView({ name: 'filters' })} />
+          {noneTrain && <NoTrainingNote />}
           {rows.length === 0 && (
-            <Text className="text-white text-sm text-center pt-4 px-5">{t('top_bar.model_chip.no_models_found', { query: searchQuery })}</Text>
+            <Text className="text-white text-sm text-center pt-4 px-5">{t('opper_models.filters.none_match')}</Text>
           )}
           <BottomSheetFlatList
             data={rows}
-            keyExtractor={(m: OpperImageModel) => m.id || 'default'}
+            keyExtractor={(m: OpperModel) => m.id || 'default'}
             contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100, gap: 8 }}
             keyboardShouldPersistTaps="handled"
-            renderItem={({ item: m }: { item: OpperImageModel }) => {
-              const isSelected = m.id === settings.model;
-              return (
-                <TouchableOpacity
-                  disabled={saving}
-                  onPress={() => select(m.id)}
-                  style={{
-                    backgroundColor: isSelected ? '#2e404b' : '#2A2A2E',
-                    borderWidth: isSelected ? 2 : 0,
-                    borderColor: isSelected ? '#7cd4fd' : 'transparent',
-                  }}
-                  className="w-full p-4 rounded-xl flex-row items-center justify-between">
-                  <View className="flex-1" style={{ gap: 2 }}>
-                    <Text className="text-white text-base font-medium" numberOfLines={1}>{m.name}</Text>
-                    {!!m.id && m.name !== m.id && <Text className="text-[#9F9FA0] text-xs" numberOfLines={1}>{m.id}</Text>}
-                    {!!formatOpperPrice(m.price) && <Text className="text-[#7cd4fd] text-xs" numberOfLines={1}>{formatOpperPrice(m.price)}</Text>}
-                  </View>
-                  {isSelected && <Check size={20} color="#7cd4fd" weight="bold" style={{ marginLeft: 12 }} />}
-                </TouchableOpacity>
-              );
-            }}
+            renderItem={({ item: m }: { item: OpperModel }) => (
+              <OpperModelRow
+                id={m.id}
+                name={m.name}
+                model={m.id ? m : null}
+                kind="image"
+                selected={m.id === settings.model}
+                disabled={saving}
+                onPress={() => select(m.id)}
+                onInfo={() => setView({ name: 'info', model: m })}
+              />
+            )}
           />
         </>
       )}
     </View>
   );
 }
+

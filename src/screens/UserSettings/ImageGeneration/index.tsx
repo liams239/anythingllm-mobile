@@ -9,6 +9,7 @@ import { showToast } from '@/utils/Notification';
 import { clearOpperSettings, formatOpperPrice, getOpperSettings, listOpperImageModels, OPPER_MODEL_PLACEHOLDER, saveOpperSettings, type OpperImageModel } from '@/utils/opper';
 import uiStore from '@/store/UIStore';
 import ToolsManager from '@/utils/ToolsManager';
+import { ModelBadges } from '@/components/OpperModels/Badges';
 import { IWorkspacePageKey } from '../index';
 
 interface ImageGenerationProps {
@@ -212,7 +213,7 @@ function ModelList({ models, status, selected, onSelect, onRetry }: {
 
   const rows = [{ id: '', name: t('settings.image_generation.default_model'), provider: 'opper' }, ...models];
   return (
-    <View style={{ backgroundColor: '#1B1B1E', borderRadius: 8, maxHeight: 320, overflow: 'hidden' }}>
+    <View style={{ backgroundColor: '#1B1B1E', borderRadius: 8, maxHeight: 420, overflow: 'hidden' }}>
       <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled">
         {rows.map((m, index) => {
           const isSelected = m.id === selected;
@@ -227,6 +228,7 @@ function ModelList({ models, status, selected, onSelect, onRetry }: {
                 <Text numberOfLines={1} className="text-white text-base">{m.name}</Text>
                 {!!m.id && m.name !== m.id && <Text numberOfLines={1} style={{ color: '#9F9FA0' }} className="text-xs">{m.id}</Text>}
                 {!!formatOpperPrice(m.price) && <Text numberOfLines={1} style={{ color: '#7CC4FF' }} className="text-xs">{formatOpperPrice(m.price)}</Text>}
+                <ModelBadges meta={(m as OpperImageModel).meta} kind="image" />
               </View>
               {isSelected && <Check size={16} color="#FFF" weight="bold" />}
             </TouchableOpacity>

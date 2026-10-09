@@ -4,7 +4,7 @@
  */
 jest.mock('react-native-keychain', () => ({}));
 
-import { listOpperImageModels } from '../index';
+import { clearOpperModelCache, listOpperImageModels } from '../index';
 
 const fetchMock = jest.fn();
 global.fetch = fetchMock as any;
@@ -23,7 +23,10 @@ function serve(routes: Record<string, (offset: number) => any>) {
     });
 }
 
-beforeEach(() => fetchMock.mockReset());
+beforeEach(() => {
+    fetchMock.mockReset();
+    clearOpperModelCache();
+});
 
 test('merges both listings, sorted and deduplicated, and sends the key', async () => {
     serve({
@@ -70,9 +73,18 @@ test('stops when an endpoint ignores the offset and repeats the same page', asyn
 
 test('uses the other listing when one fails, throws only when both fail', async () => {
     serve({ [MODELS_URL]: () => json(['openai/dall-e-3']) });
-    expect(await listOpperImageModels()).toEqual([{ id: 'openai/dall-e-3', name: 'openai/dall-e-3', provider: 'openai', price: null, aliases: [] }]);
+    expect(await listOpperImageModels()).toEqual([{ id: 'openai/dall-e-3', name: 'openai/dall-e-3', provider: 'openai', price: null, aliases: [], meta: null }]);
 
     fetchMock.mockReset();
+    clearOpperModelCache();
     fetchMock.mockResolvedValue(json({ detail: 'down' }, 503));
     await expect(listOpperImageModels()).rejects.toThrow('Opper error 503: down');
+});
+
+test('reuses a listing for a while instead of fetching it again', async () => {
+    serve({ [IMAGES_URL]: () => json(['a/x']), [MODELS_URL]: () => json([]) });
+    await listOpperImageModels('k');
+    const calls = fetchMock.mock.calls.length;
+    await listOpperImageModels('k');
+    expect(fetchMock.mock.calls.length).toBe(calls);
 });

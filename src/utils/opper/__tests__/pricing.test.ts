@@ -62,14 +62,14 @@ test('marks tiered and surcharged prices with a plus', () => {
     expect(parseOpperPrice(byId('abliteration/abliterated-model'))?.tiered).toBeUndefined();
 });
 
-describe('listOpperModelPrices', () => {
+describe('listOpperChatModels', () => {
     const fetchMock = jest.fn();
     beforeAll(() => { global.fetch = fetchMock as any; });
 
-    test('keys prices by route id and alias only, never the shared model name', async () => {
+    test('keys models by route id and alias only, never the shared model name', async () => {
         jest.resetModules();
         jest.doMock('react-native-keychain', () => ({}));
-        const { listOpperModelPrices } = require('../index');
+        const { listOpperChatModels } = require('../index');
         const route = (id: string, input: number, aliases: string[] = []) => ({
             id, aliases, model_id: 'deepseek-v4-pro', pricing: { billing_unit: 'per_mtok', input: [input], output: [input * 2] },
         });
@@ -78,11 +78,32 @@ describe('listOpperModelPrices', () => {
             route('deepseek/deepseek-v4-pro', 1.2),
         ] }) });
 
-        const prices = await listOpperModelPrices();
+        const routes = await listOpperChatModels();
 
-        expect(prices.get('alibaba:global/deepseek-v4-pro')?.input).toBe(1.79);
-        expect(prices.get('alibaba:eu/deepseek-v4-pro')?.input).toBe(1.79);
-        expect(prices.get('deepseek/deepseek-v4-pro')?.input).toBe(1.2);
-        expect(prices.has('deepseek-v4-pro')).toBe(false);
+        expect(routes.get('alibaba:global/deepseek-v4-pro')?.price?.input).toBe(1.79);
+        expect(routes.get('alibaba:eu/deepseek-v4-pro')?.price?.input).toBe(1.79);
+        expect(routes.get('deepseek/deepseek-v4-pro')?.price?.input).toBe(1.2);
+        expect(routes.has('deepseek-v4-pro')).toBe(false);
     });
+});
+
+// One entry per image pricing shape seen in a real GET /v3/models?type=image page
+const IMAGES = require('./fixtures-image-models.json').models as Array<{ id: string; pricing: any }>;
+const image = (id: string) => formatOpperPrice(parseOpperPrice(IMAGES.find((m) => m.id === id)));
+
+test('reads every real image pricing shape', () => {
+    expect(image('pruna/p-image')).toBe('$0.002 /image');
+    expect(image('bytedance:ap/seedream-4.5')).toBe('$0.04 /image');
+    // reported_cost with the real unit on the rate
+    expect(image('deepinfra/Bria/Bria-3.2')).toBe('$0.04 /image');
+    expect(image('deepinfra/black-forest-labs/FLUX-2-pro')).toBe('$0.015 /megapixel');
+    expect(image('fal/flux-1-schnell')).toBe('$0.003 /megapixel');
+    // One rate per quality and size: shown as a range
+    expect(image('openai/gpt-image-1')).toBe('$0.011 – 0.25 /image');
+    expect(image('xai/grok-imagine-image-2.0')).toMatch(/^\$0\.04 – 0\.\d+ \/image$/);
+    expect(image('fal/ideogram-v4.5')).toBe('$0.03 – 0.22 /image');
+    // Per-token billing that also lists per-image rates prefers the per-image price
+    expect(image('openai/gpt-image-2')).toBe('$0.0047 – 0.43 /image');
+    // Image tokens only
+    expect(image('openai/gpt-image-2.5-sunburst')).toBe('$8 in · $30 out · $2 cache /1M image tokens');
 });
