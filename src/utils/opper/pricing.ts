@@ -1,100 +1,73 @@
 /**
- * Prices from Opper's model listings. Chat models carry eg:
- *   pricing: { billing_unit: "per_mtok", input: [1.7904], output: [3.5808], cached_input: [0.1492] }
- * where each list holds price tiers (the first is the base price), and image models eg:
- *   pricing: { billing_unit: "per_generation", rates: [{ unit, amount: 0.04 }], price_per_generation: 0.04 } The shape is not documented, so
- * this also copes with plain numbers, "$1.00" strings and nested objects, and leaves out anything
- * it cannot place rather than guess. The model's top-level `cost` is a relative score, not a price.
+ * Prices from Opper's model listings (GET /v3/models). Chat models carry eg:
+ *   pricing: { billing_unit: "per_mtok", input: [1.79], output: [3.58], cached_input: [0.15],
+ *              cache_creation: [12.5], cache_creation_1h: [20] }
+ * Each list holds price tiers: `thresholds` (prompt tokens) mark where the next tier starts, and
+ * some models instead add `input_surcharge_threshold_tokens` with a multiplier. Image models carry eg:
+ *   pricing: { billing_unit: "per_generation", rates: [{ unit, amount: 0.04 }], price_per_generation: 0.04 }
+ * Only these known fields are read - anything else (web search fees, ...) is left out rather than
+ * guessed. The model's top-level `cost` is a relative score, not a price.
  */
 
-/** Token prices in USD per 1M tokens, image price in USD per image */
+/** Token prices in USD per 1M tokens (base tier), image price in USD per image */
 export type OpperPrice = {
     input?: number;
     output?: number;
     cacheRead?: number;
     cacheWrite?: number;
     perImage?: number;
+    /** Longer prompts cost more than the base prices shown */
+    tiered?: boolean;
 };
 
-type Field = keyof OpperPrice;
-
-/** Checked in order - cache keys first so "cache_read_input" is not taken for plain input */
-const FIELD_PATTERNS: Array<[Field, RegExp]> = [
-    ['cacheRead', /cache[_ -]?(read|hit)|cached[_ -]?(input|prompt|tokens)?|input[_ -]?cache[_ -]?read/],
-    ['cacheWrite', /cache[_ -]?(write|creation|miss)|input[_ -]?cache[_ -]?write/],
-    ['perImage', /image/],
-    ['input', /input|prompt/],
-    ['output', /output|completion/],
-];
-
-const PER_MILLION = /million|1m|mtok|per[_ -]?m\b/;
-const PER_THOUSAND = /thousand|1k|ktok/;
-const PER_TOKEN = /per[_ -]?token|token[_ -]?price/;
-
 function toNumber(value: unknown): number | null {
-    if (typeof value === 'number') return Number.isFinite(value) ? value : null;
-    if (typeof value !== 'string') return null;
+    if (typeof value === 'number') return Number.isFinite(value) && value >= 0 ? value : null;
+    if (typeof value !== 'string' || !value.trim()) return null;
     const parsed = Number(value.replace(/[$,\s]/g, ''));
-    return value.trim() && Number.isFinite(parsed) ? parsed : null;
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
-function fieldFor(path: string): Field | null {
-    for (const [field, pattern] of FIELD_PATTERNS) if (pattern.test(path)) return field;
-    return null;
+/** Base tier of a price that is either a number or a list of tiers */
+function baseTier(value: unknown): number | null {
+    return toNumber(Array.isArray(value) ? value[0] : value);
 }
 
-/** Normalize a token price to USD per 1M tokens, using the key path for the unit when it says one */
-function perMillion(value: number, path: string): number {
-    if (PER_MILLION.test(path)) return value;
-    if (PER_THOUSAND.test(path)) return value * 1_000;
-    if (PER_TOKEN.test(path)) return value * 1_000_000;
-    // No unit in the key: real per-million prices are cents or more, per-token prices are tiny
-    return value > 0 && value < 0.001 ? value * 1_000_000 : value;
-}
+/** Multiplier turning a token price in the given billing unit into USD per 1M tokens */
+const TOKEN_UNITS: Record<string, number> = {
+    per_mtok: 1,
+    per_ktok: 1_000,
+    per_token: 1_000_000,
+};
 
-function walk(node: unknown, path: string, out: OpperPrice, unit: string) {
-    if (Array.isArray(node)) {
-        // A list of routes/tiers - the first one is the default route
-        if (node.length) walk(node[0], path, out, unit);
-        return;
-    }
-    if (node && typeof node === 'object') {
-        for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
-            if (key.toLowerCase() === 'billing_unit') continue;
-            walk(value, path ? `${path}.${key.toLowerCase()}` : key.toLowerCase(), out, unit);
-        }
-        return;
-    }
-    const value = toNumber(node);
-    if (value === null || value < 0) return;
-    const field = fieldFor(path);
-    if (!field || out[field] !== undefined) return;
-    // billing_unit ("per_mtok", "per_image", ...) names the unit for every value under it
-    out[field] = field === 'perImage' ? value : perMillion(value, `${unit} ${path}`);
-}
-
-/** Read whatever price info an Opper model entry carries. Null when there is none. */
+/** Read the price an Opper model entry carries. Null when it has none we understand. */
 export function parseOpperPrice(entry: any): OpperPrice | null {
     const raw = entry?.pricing;
-    if (raw === undefined || raw === null) return null;
-    const out: OpperPrice = {};
-    // A bare number as pricing on an image model is a price per image
-    if (toNumber(raw) !== null && typeof raw !== 'object') {
-        out.perImage = toNumber(raw)!;
-        return out;
-    }
-    const unit = String(raw?.billing_unit ?? '').toLowerCase();
-    if (/image|generation/.test(unit)) {
-        // Image models: { billing_unit: "per_generation", price_per_generation: 0.04, rates: [{ amount }] }
+    if (!raw || typeof raw !== 'object') return null;
+    const unit = String(raw.billing_unit ?? '').toLowerCase();
+
+    if (unit === 'per_generation' || unit === 'per_image') {
         const firstRate = Array.isArray(raw.rates) ? raw.rates[0] : null;
-        const perImage = toNumber(raw.price_per_generation)
-            ?? toNumber(raw.price_per_image)
-            ?? toNumber(firstRate?.amount)
-            ?? toNumber(Array.isArray(raw.output) ? raw.output[0] : raw.output);
+        const perImage = toNumber(raw.price_per_generation) ?? toNumber(raw.price_per_image) ?? toNumber(firstRate?.amount);
         return perImage === null ? null : { perImage };
     }
-    walk(raw, '', out, unit);
-    return Object.keys(out).length ? out : null;
+
+    const factor = TOKEN_UNITS[unit];
+    if (!factor) return null;
+    const price: OpperPrice = {};
+    const set = (field: 'input' | 'output' | 'cacheRead' | 'cacheWrite', value: unknown) => {
+        const base = baseTier(value);
+        if (base !== null) price[field] = base * factor;
+    };
+    set('input', raw.input);
+    set('output', raw.output);
+    set('cacheRead', raw.cached_input);
+    set('cacheWrite', raw.cache_creation);
+    if (price.input === undefined && price.output === undefined) return null;
+
+    const hasTiers = [raw.input, raw.output].some((value) => Array.isArray(value) && value.length > 1);
+    const hasSurcharge = (toNumber(raw.input_surcharge_multiplier) ?? 1) > 1 || (toNumber(raw.output_surcharge_multiplier) ?? 1) > 1;
+    if (hasTiers || hasSurcharge) price.tiered = true;
+    return price;
 }
 
 function money(value: number): string {
@@ -106,19 +79,19 @@ function money(value: number): string {
 }
 
 /**
- * One-line summary eg: "$1 in · $3 out · $0.10 cache /1M" or "$0.04 /image".
- * Null when there is nothing to show.
+ * One-line summary eg: "$1.79 in · $3.58 out · $0.15 cache /1M" or "$0.04 /image".
+ * Tiered prices get a "+" (eg: "$0.2+ in") since long prompts cost more. Null when there is
+ * nothing to show.
  */
 export function formatOpperPrice(price: OpperPrice | null | undefined): string | null {
     if (!price) return null;
-    const tokenParts = [
-        price.input !== undefined ? `${money(price.input)} in` : null,
-        price.output !== undefined ? `${money(price.output)} out` : null,
+    if (price.perImage !== undefined) return `${money(price.perImage)} /image`;
+    const plus = price.tiered ? '+' : '';
+    const parts = [
+        price.input !== undefined ? `${money(price.input)}${plus} in` : null,
+        price.output !== undefined ? `${money(price.output)}${plus} out` : null,
         price.cacheRead !== undefined ? `${money(price.cacheRead)} cache` : null,
         price.cacheWrite !== undefined ? `${money(price.cacheWrite)} cache write` : null,
     ].filter(Boolean);
-    const parts: string[] = [];
-    if (price.perImage !== undefined) parts.push(`${money(price.perImage)} /image`);
-    if (tokenParts.length) parts.push(`${tokenParts.join(' · ')} /1M`);
-    return parts.length ? parts.join(' · ') : null;
+    return parts.length ? `${parts.join(' · ')} /1M` : null;
 }

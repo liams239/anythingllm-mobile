@@ -33,8 +33,33 @@ test('never takes the relative cost score for a price', () => {
     expect(formatOpperPrice(null)).toBeNull();
 });
 
-test('converts per-token values without a unit to per million', () => {
-    expect(parseOpperPrice({ pricing: { input: 0.000003, output: '0.000015' } })).toEqual({ input: 3, output: 15 });
+test('ignores pricing in a billing unit it does not know', () => {
+    expect(parseOpperPrice({ pricing: { input: [1], output: [2] } })).toBeNull();
+    expect(parseOpperPrice({ pricing: { billing_unit: 'per_second', input: [1] } })).toBeNull();
+});
+
+// One entry per pricing shape seen in a real GET /v3/models?type=llm page
+const FIXTURE = require('./fixtures-models.json').models as Array<{ id: string; pricing: any }>;
+const byId = (id: string) => FIXTURE.find((m) => m.id === id);
+
+test('every real pricing shape gives base input and output prices', () => {
+    for (const model of FIXTURE) {
+        const price = parseOpperPrice(model);
+        expect(price?.input).toBe(model.pricing.input[0]);
+        expect(price?.output).toBe(model.pricing.output[0]);
+    }
+});
+
+test('reads cache read and write, skips fees and surcharge fields', () => {
+    expect(parseOpperPrice(byId('anthropic/claude-fable-5-1'))).toEqual({ input: 10, output: 50, cacheRead: 0.25, cacheWrite: 12.5 });
+    expect(formatOpperPrice(parseOpperPrice(byId('anthropic/claude-fable-5-1')))).toBe('$10 in · $50 out · $0.25 cache · $12.5 cache write /1M');
+    expect(parseOpperPrice(byId('alibaba:global/qwen3.8-max'))).toEqual({ input: 2, output: 6, cacheRead: 0.25 });
+});
+
+test('marks tiered and surcharged prices with a plus', () => {
+    expect(formatOpperPrice(parseOpperPrice(byId('alibaba:eu/qwen3-vl-plus')))).toBe('$0.2+ in · $1.6+ out /1M');
+    expect(parseOpperPrice(byId('anthropic/claude-haiku-5-5'))).toMatchObject({ input: 0.1, cacheWrite: 0.125, tiered: true });
+    expect(parseOpperPrice(byId('abliteration/abliterated-model'))?.tiered).toBeUndefined();
 });
 
 describe('listOpperModelPrices', () => {

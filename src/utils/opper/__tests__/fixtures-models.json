@@ -1,0 +1,194 @@
+{
+  "models": [
+    {
+      "id": "abliteration/abliterated-model",
+      "type": "llm",
+      "cost": 0.185,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          1
+        ],
+        "output": [
+          3
+        ],
+        "cached_input": [
+          0.1
+        ]
+      }
+    },
+    {
+      "id": "alibaba:eu/qwen3-vl-plus",
+      "type": "llm",
+      "cost": 0.108,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "thresholds": [
+          131072
+        ],
+        "input": [
+          0.2,
+          0.6
+        ],
+        "output": [
+          1.6,
+          4.8
+        ]
+      }
+    },
+    {
+      "id": "alibaba:global/deepseek-v4-flash-0731",
+      "type": "llm",
+      "cost": 0.108,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.4476
+        ],
+        "output": [
+          1.3428
+        ]
+      }
+    },
+    {
+      "id": "alibaba:global/glm-5.1",
+      "type": "llm",
+      "cost": 0.198,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "thresholds": [
+          32768
+        ],
+        "input": [
+          0.8952,
+          1.1936
+        ],
+        "output": [
+          3.5808,
+          4.1776
+        ],
+        "cached_input": [
+          0.17904,
+          0.23872000000000002
+        ]
+      }
+    },
+    {
+      "id": "alibaba:global/qwen3.8-max",
+      "type": "llm",
+      "cost": 0.271,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          2
+        ],
+        "output": [
+          6
+        ],
+        "cached_input": [
+          0.25
+        ],
+        "openai_web_search_price_per_call": 0.01
+      }
+    },
+    {
+      "id": "anthropic/claude-fable-5",
+      "type": "llm",
+      "cost": 0.579,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          10
+        ],
+        "output": [
+          50
+        ],
+        "cached_input": [
+          1
+        ],
+        "cache_creation": [
+          12.5
+        ],
+        "cache_creation_1h": [
+          20
+        ]
+      }
+    },
+    {
+      "id": "anthropic/claude-fable-5-1",
+      "type": "llm",
+      "cost": 0.579,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          10
+        ],
+        "output": [
+          50
+        ],
+        "cached_input": [
+          0.25
+        ],
+        "cache_creation": [
+          12.5
+        ],
+        "cache_creation_1h": [
+          20
+        ],
+        "web_search_price_per_request": 0.01
+      }
+    },
+    {
+      "id": "anthropic/claude-haiku-5-5",
+      "type": "llm",
+      "cost": 0.044,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.1
+        ],
+        "output": [
+          0.5
+        ],
+        "cached_input": [
+          0.01
+        ],
+        "cache_creation": [
+          0.125
+        ],
+        "cache_creation_1h": [
+          0.2
+        ],
+        "input_surcharge_threshold_tokens": 100000,
+        "input_surcharge_multiplier": 5,
+        "output_surcharge_multiplier": 5
+      }
+    },
+    {
+      "id": "aws/gpt-5.6-luna",
+      "type": "llm",
+      "cost": 0.089,
+      "pricing": {
+        "billing_unit": "per_mtok",
+        "input": [
+          0.2
+        ],
+        "output": [
+          1.2
+        ],
+        "cached_input": [
+          0.02
+        ],
+        "cache_creation": [
+          0.25
+        ],
+        "input_surcharge_threshold_tokens": 272000,
+        "input_surcharge_multiplier": 2,
+        "output_surcharge_multiplier": 1.5
+      }
+    }
+  ],
+  "total": 970,
+  "offset": 0,
+  "limit": 50
+}
