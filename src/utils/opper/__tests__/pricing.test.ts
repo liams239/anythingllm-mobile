@@ -36,3 +36,28 @@ test('never takes the relative cost score for a price', () => {
 test('converts per-token values without a unit to per million', () => {
     expect(parseOpperPrice({ pricing: { input: 0.000003, output: '0.000015' } })).toEqual({ input: 3, output: 15 });
 });
+
+describe('listOpperModelPrices', () => {
+    const fetchMock = jest.fn();
+    beforeAll(() => { global.fetch = fetchMock as any; });
+
+    test('keys prices by route id and alias only, never the shared model name', async () => {
+        jest.resetModules();
+        jest.doMock('react-native-keychain', () => ({}));
+        const { listOpperModelPrices } = require('../index');
+        const route = (id: string, input: number, aliases: string[] = []) => ({
+            id, aliases, model_id: 'deepseek-v4-pro', pricing: { billing_unit: 'per_mtok', input: [input], output: [input * 2] },
+        });
+        fetchMock.mockResolvedValue({ ok: true, json: async () => ({ models: [
+            route('alibaba:global/deepseek-v4-pro', 1.79, ['alibaba:eu/deepseek-v4-pro']),
+            route('deepseek/deepseek-v4-pro', 1.2),
+        ] }) });
+
+        const prices = await listOpperModelPrices();
+
+        expect(prices.get('alibaba:global/deepseek-v4-pro')?.input).toBe(1.79);
+        expect(prices.get('alibaba:eu/deepseek-v4-pro')?.input).toBe(1.79);
+        expect(prices.get('deepseek/deepseek-v4-pro')?.input).toBe(1.2);
+        expect(prices.has('deepseek-v4-pro')).toBe(false);
+    });
+});

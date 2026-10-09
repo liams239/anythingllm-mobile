@@ -165,8 +165,9 @@ function parseModelList(body: any): OpperImageModel[] {
                 ? entry.provider
                 : entry?.provider?.display_name ?? entry?.provider?.slug ?? id.split('/')[0] ?? '',
             price: typeof entry === 'object' ? parseOpperPrice(entry) : null,
-            // Other names the model goes by: listed aliases, then the route-less id (eg: "deepseek-v4-pro")
-            aliases: [...(Array.isArray(entry?.aliases) ? entry.aliases : []), entry?.model_id, entry?.model]
+            // Only the aliases Opper lists - each route is its own entry with its own price, so the
+            // route-less name (eg: "deepseek-v4-pro") is shared and would match the wrong route
+            aliases: (Array.isArray(entry?.aliases) ? entry.aliases : [])
                 .filter((a: unknown): a is string => typeof a === 'string' && a !== id),
         });
     }
