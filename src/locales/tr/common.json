@@ -798,7 +798,10 @@
       "connect": "Bağlan",
       "connecting": "Bağlanılıyor...",
       "connect_failed": "{{provider}} adresinden modeller yüklenemedi. Yukarıdaki bilgileri kontrol edin veya yine de kullanmak için bir model adı girin.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_one": "Geliştirici araçlarını açmak için {{count}} kez daha basın",
     "dev_shortcut_hint_other": "Geliştirici araçlarını açmak için {{count}} kez daha basın",

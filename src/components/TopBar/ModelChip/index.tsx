@@ -57,10 +57,16 @@ import { useTranslation } from 'react-i18next';
 import useProviderSwitcher from '@/hooks/useProviderSwitcher';
 import ProviderPicker, { ProviderBar } from './ProviderPicker';
 import ProviderConnectForm from './ProviderConnectForm';
+import ImageModelPicker, { ImageModelBar, IMAGE_MODEL_BAR_HEIGHT } from './ImageModelPicker';
+import { getOpperSettings, type OpperSettings } from '@/utils/opper';
+import { navigateWhenReady } from '@/utils/navigationRef';
+import { PATHS } from '@/utils/paths';
 
 // Provider bar height (see `ProviderBar`) and the gap below it - keeps status messages centered under it.
 const HEADER_HEIGHT = 44;
 const HEADER_GAP = 16;
+// Gap between the provider bar and the image model row below it
+const IMAGE_MODEL_BAR_GAP = 8;
 // Short model lists fit on screen - only offer search once there is something to sift through.
 const MIN_MODELS_FOR_SEARCH = 5;
 
@@ -202,7 +208,7 @@ function closeModelSheet(bottomSheetRef: React.RefObject<BottomSheetModal | null
   bottomSheetRef.current?.dismiss();
 }
 
-type SheetView ={ name: 'models' } | { name: 'providers' } | { name: 'connect'; provider: string };
+type SheetView = { name: 'models' } | { name: 'providers' } | { name: 'connect'; provider: string } | { name: 'imageModels' };
 
 /**
  * Everything inside the chip's sheet: the model list for the active provider, plus an in-sheet
@@ -214,6 +220,19 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
   const { configuredProviders, switchProvider } = useProviderSwitcher();
   const [view, setView] = useState<SheetView>({ name: 'models' });
   const [isSwitching, setIsSwitching] = useState(false);
+  // Opper settings for the image model row - undefined while loading
+  const [imageSettings, setImageSettings] = useState<OpperSettings | null | undefined>(undefined);
+
+  useEffect(() => {
+    getOpperSettings().then(setImageSettings).catch(() => setImageSettings(null));
+  }, []);
+
+  const openImageModels = () => {
+    if (imageSettings) return setView({ name: 'imageModels' });
+    // No key yet - image generation is set up on its settings page
+    closeModelSheet(bottomSheetRef);
+    navigateWhenReady(PATHS.user_settings, { page: 'image_generation' });
+  };
 
   // Ready-to-use providers switch in one tap; anything else needs its connection details first.
   const pickProvider = async (provider: string) => {
@@ -241,6 +260,20 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
     );
   }
 
+  if (view.name === 'imageModels' && imageSettings) {
+    return (
+      <ImageModelPicker
+        settings={imageSettings}
+        onBack={() => setView({ name: 'models' })}
+        onSearchFocus={() => bottomSheetRef.current?.snapToIndex(1)}
+        onSaved={(next) => {
+          setImageSettings(next);
+          closeModelSheet(bottomSheetRef);
+        }}
+      />
+    );
+  }
+
   if (view.name === 'connect') {
     return (
       <ProviderConnectForm
@@ -257,12 +290,20 @@ function ModelSheetContent({ bottomSheetRef }: { bottomSheetRef: React.RefObject
     );
   }
 
-  const header = <ProviderBar provider={llmPreferences.provider} onPress={() => setView({ name: 'providers' })} />;
+  const showImageModel = imageSettings !== undefined;
+  const header = (
+    <View style={{ gap: IMAGE_MODEL_BAR_GAP, alignSelf: 'stretch' }}>
+      <ProviderBar provider={llmPreferences.provider} onPress={() => setView({ name: 'providers' })} />
+      {showImageModel && <ImageModelBar settings={imageSettings} onPress={openImageModels} />}
+    </View>
+  );
+  const headerHeight = HEADER_HEIGHT + (showImageModel ? IMAGE_MODEL_BAR_GAP + IMAGE_MODEL_BAR_HEIGHT : 0);
   return LLMProvider?.isExternalProvider
     ? (
       <ExternalProviderModels
         bottomSheetRef={bottomSheetRef}
         header={header}
+        headerHeight={headerHeight}
         onEditConnection={() => setView({ name: 'connect', provider: llmPreferences.provider })}
       />
     )
@@ -491,10 +532,13 @@ function AvailableModels({
 function ExternalProviderModels({
   bottomSheetRef,
   header,
+  headerHeight = HEADER_HEIGHT,
   onEditConnection,
 }: {
   bottomSheetRef: React.RefObject<BottomSheetModal | null>;
   header: React.ReactNode;
+  /** Height of `header`, so status messages center in the space below it */
+  headerHeight?: number;
   onEditConnection: () => void;
 }) {
   const { t } = useTranslation();
@@ -564,7 +608,7 @@ function ExternalProviderModels({
     return (
       <View className="w-full" style={{ gap: HEADER_GAP }}>
         {header}
-        <VisibleSheetCenter inset={HEADER_HEIGHT + HEADER_GAP} style={{ gap: 12 }}>
+        <VisibleSheetCenter inset={headerHeight + HEADER_GAP} style={{ gap: 12 }}>
           <ActivityIndicator size="large" color="white" />
           <Text className="text-[#9F9FA0] text-sm">{t('top_bar.model_chip.loading_models', { provider: providerName })}</Text>
         </VisibleSheetCenter>
@@ -576,7 +620,7 @@ function ExternalProviderModels({
     return (
       <View className="w-full" style={{ gap: HEADER_GAP }}>
         {header}
-        <VisibleSheetCenter inset={HEADER_HEIGHT + HEADER_GAP} style={{ gap: 12, paddingHorizontal: 32 }}>
+        <VisibleSheetCenter inset={headerHeight + HEADER_GAP} style={{ gap: 12, paddingHorizontal: 32 }}>
           <WarningCircle size={40} color="#f87171" weight="bold" />
           <Text className="text-white text-base font-semibold text-center">
             {t('top_bar.model_chip.list_failed_title', { provider: providerName })}

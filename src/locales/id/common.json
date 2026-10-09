@@ -767,7 +767,10 @@
       "connect": "Terhubung",
       "connecting": "Menghubungkan...",
       "connect_failed": "Tidak dapat memuat model dari {{provider}}. Periksa detail di atas, atau masukkan nama model untuk menggunakannya.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "Tekan {{count}} kali lagi untuk membuka alat pengembang",
     "thread_menu": {

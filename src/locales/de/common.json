@@ -798,7 +798,10 @@
       "connect": "Verbinden",
       "connecting": "Verbinde...",
       "connect_failed": "Fehler beim Laden der Modelle von {{provider}}. Bitte überprüfen Sie die Details oben oder geben Sie einen Modellnamen ein, um es trotzdem zu verwenden.",
-      "model": "Modell"
+      "model": "Modell",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_one": "Drücken Sie {{count}} Mal mehr, um Entwicklertools zu öffnen",
     "dev_shortcut_hint_other": "Drücken Sie {{count}} Mal mehr, um Entwicklertools zu öffnen",

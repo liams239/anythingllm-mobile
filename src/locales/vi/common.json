@@ -767,7 +767,10 @@
       "connect": "Kết nối",
       "connecting": "Đang kết nối...",
       "connect_failed": "Không thể tải mô hình từ {{provider}}. Vui lòng kiểm tra thông tin trên, hoặc nhập tên mô hình để sử dụng.",
-      "model": "Mô hình"
+      "model": "Mô hình",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "Nhấn {{count}} lần nữa để mở công cụ nhà phát triển",
     "thread_menu": {

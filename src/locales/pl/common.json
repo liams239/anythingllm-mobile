@@ -860,7 +860,10 @@
       "connect": "Połącz",
       "connecting": "Połączenie...",
       "connect_failed": "Nie udało się załadować modeli z {{provider}}. Sprawdź szczegóły powyżej, lub wpisz nazwę modelu, aby go użyć.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_few": "Naciśnij {{count}} razy więcej, aby otworzyć narzędzia programistyczne",
     "dev_shortcut_hint_many": "Naciśnij {{count}} razy więcej, aby otworzyć narzędzia programistyczne",

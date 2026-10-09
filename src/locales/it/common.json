@@ -829,7 +829,10 @@
       "connect": "Connetti",
       "connecting": "In attesa di connessione...",
       "connect_failed": "Impossibile caricare i modelli da {{provider}}. Controlla i dettagli precedenti, oppure inserisci il nome del modello per utilizzarlo comunque.",
-      "model": "Modello"
+      "model": "Modello",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_many": "Premi {{count}} altre volte per aprire gli strumenti di sviluppo",
     "dev_shortcut_hint_one": "Premi {{count}} altra volta per aprire gli strumenti di sviluppo",

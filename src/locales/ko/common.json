@@ -767,7 +767,10 @@
       "connect": "연결",
       "connecting": "연결 중...",
       "connect_failed": "{{provider}}에서 모델을 로드할 수 없습니다. 상단의 세부 정보를 확인하거나, 모델 이름을 직접 입력하여 사용하십시오.",
-      "model": "모델"
+      "model": "모델",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "개발자 도구를 열기 위해 {{count}}회 더 누르세요",
     "thread_menu": {

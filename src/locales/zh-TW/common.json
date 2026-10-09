@@ -767,7 +767,10 @@
       "connect": "連接",
       "connecting": "正在連接...",
       "connect_failed": "無法從 {{provider}} 載入模型。請查看上方詳細資訊，或輸入模型名稱以便使用。",
-      "model": "模型"
+      "model": "模型",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "再按 {{count}} 次以開啟開發者工具",
     "thread_menu": {

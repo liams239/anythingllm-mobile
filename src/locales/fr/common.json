@@ -829,7 +829,10 @@
       "connect": "Se connecter",
       "connecting": "Connexion...",
       "connect_failed": "Impossible de charger les modèles depuis {{provider}}. Veuillez vérifier les détails ci-dessus, ou saisissez le nom d'un modèle pour l'utiliser.",
-      "model": "Modèle"
+      "model": "Modèle",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_many": "Appuyez {{count}} fois de plus pour ouvrir les outils de développeur",
     "dev_shortcut_hint_one": "Appuyez {{count}} fois de plus pour ouvrir les outils de développeur",

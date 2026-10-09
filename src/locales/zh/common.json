@@ -767,7 +767,10 @@
       "connect": "连接",
       "connecting": "正在连接...",
       "connect_failed": "无法从 {{provider}} 加载模型。请查看上面的详细信息，或者手动输入模型名称进行使用。",
-      "model": "模型"
+      "model": "模型",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_other": "再按 {{count}} 次打开开发者工具",
     "thread_menu": {

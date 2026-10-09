@@ -860,7 +860,10 @@
       "connect": "Подключиться",
       "connecting": "Подключение...",
       "connect_failed": "Не удалось загрузить модели из {{provider}}. Проверьте информацию выше, или введите название модели, чтобы использовать её.",
-      "model": "Модель"
+      "model": "Модель",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_few": "Нажмите ещё {{count}} раза, чтобы открыть инструменты разработчика",
     "dev_shortcut_hint_many": "Нажмите ещё {{count}} раз, чтобы открыть инструменты разработчика",

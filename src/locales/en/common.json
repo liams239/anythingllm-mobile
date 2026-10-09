@@ -798,7 +798,10 @@
       "connect": "Connect",
       "connecting": "Connecting...",
       "connect_failed": "Could not load models from {{provider}}. Check the details above, or enter a model name to use it anyway.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": "Image model",
+      "image_model_setup": "Set up image generation",
+      "image_models_failed": "Could not load the image models from Opper."
     },
     "dev_shortcut_hint_one": "Press {{count}} more time to open developer tools",
     "dev_shortcut_hint_other": "Press {{count}} more times to open developer tools",

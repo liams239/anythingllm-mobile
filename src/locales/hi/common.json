@@ -798,7 +798,10 @@
       "connect": "जुड़ें",
       "connecting": "जुड़ रहा है...",
       "connect_failed": "{{provider}} से मॉडल लोड नहीं हो पाए। ऊपर दिए गए विवरण की जांच करें, या फिर मॉडल का नाम दर्ज करके इसका उपयोग करें।",
-      "model": "मॉडल"
+      "model": "मॉडल",
+      "image_model": null,
+      "image_model_setup": null,
+      "image_models_failed": null
     },
     "dev_shortcut_hint_one": "डेवलपर उपकरण खोलने के लिए {{count}} अधिक बार दबाएँ",
     "dev_shortcut_hint_other": "डेवलपर उपकरण खोलने के लिए {{count}} अधिक बार दबाएँ",

@@ -798,7 +798,10 @@
       "connect": "Verbinden",
       "connecting": "Verbinding wordt gemaakt...",
       "connect_failed": "Kon modellen niet laden vanuit {{provider}}. Controleer de details hierboven, of voer een modelnaam in om het toch te gebruiken.",
-      "model": "Model"
+      "model": "Model",
+      "image_model": "Beeldmodel",
+      "image_model_setup": "Afbeeldingen genereren instellen",
+      "image_models_failed": "Kon de beeldmodellen van Opper niet laden."
     },
     "dev_shortcut_hint_one": "Druk {{count}} meer keer om ontwikkelaarshulpmiddelen te openen",
     "dev_shortcut_hint_other": "Druk {{count}} meer keren om ontwikkelaarshulpmiddelen te openen",
